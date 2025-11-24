@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { GoogleGenAI } from "@google/genai";
@@ -1576,6 +1575,7 @@ function formatTime(milliseconds: number): string {
 // --- Main Component ---
 const CyberpunkGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastFrameTimeRef = useRef(0);
   const hpBarRef = useRef<HTMLDivElement>(null);
   const energyBarRef = useRef<HTMLDivElement>(null);
   const energyTextRef = useRef<HTMLDivElement>(null);
@@ -1608,7 +1608,6 @@ const CyberpunkGame = () => {
     floatingTexts: [] as FloatingText[],
     keys: {} as Record<string, boolean>,
     screenShake: 0,
-    cameraX: 0,
     glitchIntensity: 0,
     isFetchingBoss: false,
     nextBossSpawnReady: false,
@@ -1969,16 +1968,15 @@ const CyberpunkGame = () => {
     if (!ctx) return;
 
     let animationId: number;
-    let lastFrameTime = 0;
     const TARGET_FPS = 60;
     const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
     const render = (timestamp: number) => {
-      if (!lastFrameTime) lastFrameTime = timestamp;
-      const deltaTime = timestamp - lastFrameTime;
+      if (!lastFrameTimeRef.current) lastFrameTimeRef.current = timestamp;
+      const deltaTime = timestamp - lastFrameTimeRef.current;
 
       if (deltaTime >= FRAME_INTERVAL) {
-        lastFrameTime = timestamp - (deltaTime % FRAME_INTERVAL);
+        lastFrameTimeRef.current = timestamp - (deltaTime % FRAME_INTERVAL);
 
         if (gameState === 'PLAYING') {
         const g = gameRef.current;
@@ -2183,7 +2181,7 @@ const CyberpunkGame = () => {
                                     startBossTimer(15); 
                                 }
                             } else {
-                                if (e.type === 'BOSS') setBossHp(prev => ({ ...prev, current: e.hp }));
+                                if (e.type === 'BOSS') setBossHp(prev => ({...prev, current: e.hp}));
                             }
                         }
                     }
@@ -2364,10 +2362,11 @@ const CyberpunkGame = () => {
             ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
         }
       }
+      }
       animationId = requestAnimationFrame(render);
     };
 
-    render();
+    animationId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationId);
   }, [gameState, bossHp, bossTimer]);
 
@@ -2506,7 +2505,7 @@ const CyberpunkGame = () => {
                               <span>量子毀滅砲 (大範圍爆炸傷害)</span>
                           </div>
                           <div className="flex items-center gap-3 col-span-2">
-                              <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-xs">L-CLICK / K</div>
+                              <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center text-xs font-bold shadow-[0_0_5px_#3b82f6]">L-CLICK / K</div>
                               <span>貓爪攻擊 (回復能量)</span>
                           </div>
                       </div>
@@ -2575,7 +2574,7 @@ const CyberpunkGame = () => {
 
               <button 
                   onClick={gameRef.current.isGameActive ? resumeGame : startGame}
-                  className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse"
+                  className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(255,0,0,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(255,0,0,0.6)] transition-all z-20 font-arcade animate-pulse"
               >
                   {gameRef.current.isGameActive ? "恢復連線 (RESUME)" : "開始連結 (START LINK)"}
               </button>
