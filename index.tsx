@@ -1703,6 +1703,15 @@ const CyberpunkGame = () => {
   }, [gameState]);
 
   const startGame = () => {
+      // Ensure dimensions are correct and re-init level
+      CANVAS_WIDTH = window.innerWidth;
+      CANVAS_HEIGHT = window.innerHeight;
+      if (canvasRef.current) {
+          canvasRef.current.width = CANVAS_WIDTH;
+          canvasRef.current.height = CANVAS_HEIGHT;
+      }
+      initLevel();
+
       soundEngine.init();
       soundEngine.playStartGame();
       setTimeout(() => soundEngine.startBGM('COMBAT'), 500);
@@ -1976,6 +1985,8 @@ const CyberpunkGame = () => {
       const deltaTime = timestamp - lastFrameTimeRef.current;
 
       if (deltaTime >= FRAME_INTERVAL) {
+        // Cap deltaTime to prevent huge jumps if tab was inactive
+        const safeDelta = Math.min(deltaTime, 100);
         lastFrameTimeRef.current = timestamp - (deltaTime % FRAME_INTERVAL);
 
         if (gameState === 'PLAYING') {
