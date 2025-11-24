@@ -1629,6 +1629,15 @@ const CyberpunkGame = () => {
         }
         initLevel();
     };
+    
+    // Initialize canvas size immediately
+    if (canvasRef.current) {
+        CANVAS_WIDTH = window.innerWidth;
+        CANVAS_HEIGHT = window.innerHeight;
+        canvasRef.current.width = CANVAS_WIDTH;
+        canvasRef.current.height = CANVAS_HEIGHT;
+    }
+
     window.addEventListener('resize', handleResize);
     
     initLevel();
@@ -1960,9 +1969,18 @@ const CyberpunkGame = () => {
     if (!ctx) return;
 
     let animationId: number;
+    let lastFrameTime = 0;
+    const TARGET_FPS = 60;
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
-    const render = () => {
-      if (gameState === 'PLAYING') {
+    const render = (timestamp: number) => {
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      const deltaTime = timestamp - lastFrameTime;
+
+      if (deltaTime >= FRAME_INTERVAL) {
+        lastFrameTime = timestamp - (deltaTime % FRAME_INTERVAL);
+
+        if (gameState === 'PLAYING') {
         const g = gameRef.current;
         g.currentTime = Date.now();
         const elapsedSec = (g.currentTime - g.startTime) / 1000;
@@ -2345,11 +2363,12 @@ const CyberpunkGame = () => {
             ctx.textAlign = 'center';
             ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
         }
+        }
       }
       animationId = requestAnimationFrame(render);
     };
 
-    render();
+    animationId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationId);
   }, [gameState, bossHp, bossTimer]);
 
