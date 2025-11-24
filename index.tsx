@@ -2363,12 +2363,11 @@ const CyberpunkGame = () => {
             ctx.textAlign = 'center';
             ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
         }
-        }
       }
       animationId = requestAnimationFrame(render);
     };
 
-    animationId = requestAnimationFrame(render);
+    render();
     return () => cancelAnimationFrame(animationId);
   }, [gameState, bossHp, bossTimer]);
 
@@ -2527,7 +2526,7 @@ const CyberpunkGame = () => {
                           </div>
                           <div className="flex items-center gap-3">
                               <div className="w-8 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"></div>
-                              <span className="text-sm">神經加速 (攻速 + 跑速大幅提升 / 體力無上限)</span>
+                              <span className="text-sm">沙德威斯坦 (攻速 + 跑速大幅提升 / 體力無上限)</span>
                           </div>
                           <div className="flex items-center gap-3">
                               <div className="w-6 h-6 border-2 border-blue-500 text-blue-500 flex items-center justify-center text-xs font-bold rounded-full shadow-[0_0_5px_#3b82f6]">S</div>
