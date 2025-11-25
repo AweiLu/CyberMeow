@@ -98,71 +98,71 @@ class SoundSynthesizer {
         ]
     };
 
-    // --- COMBAT TRACK 2: CYBERPUNK GLITCH ---
+    // --- COMBAT TRACK 2: RETRO ARCADE HEROES ---
     track2 = {
         bass: [
-            [28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28], // E low aggressive
-            [24, 24, 24, 24, 24, 24, 24, 24, 31, 31, 31, 31, 31, 31, 31, 31], // C to G
-            [28, 40, 28, 40, 28, 40, 28, 40, 28, 40, 28, 40, 28, 40, 28, 40], // E arpeggio
-            [26, 38, 26, 38, 26, 38, 26, 38, 33, 45, 33, 45, 33, 45, 33, 45], // D to A
-            [28, 28, 40, 28, 28, 28, 40, 28, 31, 31, 43, 31, 31, 31, 43, 31], // Syncopated
-            [24, 36, 24, 36, 24, 36, 24, 36, 26, 38, 26, 38, 28, 40, 28, 40], // Rising
-            [28, 28, 28, 28, 40, 40, 40, 40, 28, 28, 28, 28, 40, 40, 40, 40], // Power chords
-            [28, 31, 33, 36, 40, 36, 33, 31, 28, 31, 33, 36, 40, 43, 45, 48]  // Climax run
+            [36, 0, 36, 0, 36, 0, 36, 0, 34, 0, 34, 0, 34, 0, 34, 0], // Simple C-Bb bounce
+            [36, 0, 36, 0, 39, 0, 39, 0, 41, 0, 41, 0, 43, 0, 43, 0], // C-Eb-F-G climb
+            [36, 36, 36, 0, 36, 36, 36, 0, 36, 36, 36, 0, 36, 36, 36, 0], // Driving C
+            [36, 0, 39, 0, 41, 0, 43, 0, 48, 0, 43, 0, 41, 0, 39, 0], // Classic progression
+            [31, 0, 31, 0, 31, 0, 31, 0, 36, 0, 36, 0, 36, 0, 36, 0], // G-C transition
+            [34, 0, 34, 0, 34, 0, 34, 0, 36, 0, 36, 0, 36, 0, 36, 0], // Bb-C power
+            [36, 48, 36, 48, 36, 48, 36, 48, 34, 46, 34, 46, 34, 46, 34, 46], // Octave bounce
+            [36, 0, 36, 36, 36, 0, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36]  // Finale rush
         ],
         melody: [
-            [76, 0, 76, 79, 0, 83, 0, 79, 76, 0, 76, 79, 83, 0, 88, 0], // Fast arpeggios
-            [72, 72, 0, 72, 84, 84, 0, 84, 79, 79, 0, 79, 91, 91, 0, 91], // Octave jumps
-            [88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73], // Glitch slide
-            [76, 0, 0, 0, 88, 0, 0, 0, 76, 0, 0, 0, 91, 0, 0, 0], // Sparse stabs
-            [76, 79, 83, 88, 83, 79, 76, 72, 74, 77, 81, 86, 81, 77, 74, 70], // Wave pattern
-            [0, 76, 0, 88, 0, 76, 0, 91, 0, 83, 0, 95, 0, 88, 0, 100], // Synth stabs
-            [88, 88, 91, 91, 95, 95, 88, 88, 83, 83, 86, 86, 90, 90, 83, 83], // Chord hits
-            [76, 79, 83, 88, 91, 95, 100, 103, 100, 95, 91, 88, 83, 79, 76, 0] // Epic finale
+            [60, 0, 60, 63, 0, 67, 0, 63, 60, 0, 0, 0, 0, 0, 0, 0], // Classic chip melody
+            [72, 0, 72, 70, 0, 67, 0, 63, 67, 0, 0, 0, 0, 0, 0, 0], // Response phrase
+            [60, 63, 67, 72, 67, 63, 60, 0, 58, 62, 65, 70, 65, 62, 58, 0], // Arpeggio sweep
+            [60, 60, 60, 63, 63, 63, 67, 67, 72, 72, 72, 70, 67, 65, 63, 60], // Retro lead
+            [55, 0, 58, 0, 62, 0, 67, 0, 62, 0, 58, 0, 55, 0, 0, 0], // Lower harmony
+            [60, 0, 67, 0, 72, 0, 75, 0, 72, 67, 63, 60, 58, 55, 53, 0], // Descending run
+            [72, 72, 0, 72, 70, 70, 0, 70, 67, 67, 0, 67, 65, 65, 0, 65], // Heroic theme
+            [60, 63, 67, 72, 75, 79, 84, 87, 84, 79, 75, 72, 67, 63, 60, 0] // Epic climb
         ],
         perc: [
-            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1], // Fast 4/4
-            [1, 0, 2, 0, 1, 1, 2, 0, 1, 0, 2, 0, 1, 1, 2, 2], // Breakbeat
-            [1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2], // Industrial
-            [1, 0, 0, 1, 2, 0, 0, 2, 1, 1, 0, 1, 2, 2, 0, 2], // Glitchy
-            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], // Machine gun
-            [1, 0, 1, 0, 2, 0, 2, 0, 1, 0, 1, 0, 2, 2, 2, 2], // Build up
-            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1], // Driving
-            [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2]  // Chaos
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0], // Classic 8-bit kick/snare
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 1], // Variation
+            [1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0], // Steady beat
+            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1], // Driving rhythm
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 0], // Sparse
+            [1, 0, 1, 0, 2, 0, 2, 0, 1, 0, 1, 0, 2, 0, 2, 0], // Building
+            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 2, 2], // Power section
+            [1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2]  // Full energy
         ]
     };
 
-    // --- COMBAT TRACK 3: ELECTRIC PULSE ---
+    // --- COMBAT TRACK 3: ARCADE WARRIORS ---
     track3 = {
         bass: [
-            [33, 33, 33, 33, 33, 33, 33, 33, 40, 40, 40, 40, 40, 40, 40, 40], // F to C power
-            [36, 36, 36, 36, 36, 36, 36, 36, 43, 43, 43, 43, 43, 43, 43, 43], // G# to G# high
-            [33, 45, 33, 45, 33, 45, 33, 45, 40, 52, 40, 52, 40, 52, 40, 52], // Rapid arp
-            [36, 48, 36, 48, 36, 48, 36, 48, 38, 50, 38, 50, 38, 50, 38, 50], // Pulsing
-            [33, 0, 33, 0, 45, 0, 45, 0, 33, 0, 33, 0, 45, 0, 45, 0], // Syncopated
-            [40, 0, 40, 0, 52, 0, 52, 0, 38, 0, 38, 0, 50, 0, 50, 0], // Stuttering bass
-            [33, 33, 45, 45, 33, 33, 45, 45, 40, 40, 52, 52, 40, 40, 52, 52], // Bouncing
-            [36, 38, 40, 43, 45, 48, 50, 52, 52, 50, 48, 45, 43, 40, 38, 36]  // Full sweep
+            [31, 31, 31, 31, 31, 31, 31, 31, 36, 36, 36, 36, 36, 36, 36, 36], // G-C power bass
+            [34, 34, 34, 34, 34, 34, 34, 34, 39, 39, 39, 39, 39, 39, 39, 39], // Bb-Eb energy
+            [31, 0, 31, 31, 31, 0, 31, 31, 36, 0, 36, 36, 36, 0, 36, 36], // Bouncy groove
+            [29, 29, 29, 0, 34, 34, 34, 0, 36, 36, 36, 0, 41, 41, 41, 0], // Ascending power
+            [31, 31, 0, 31, 31, 31, 0, 31, 36, 36, 0, 36, 36, 36, 0, 36], // Syncopated drive
+            [34, 0, 34, 0, 36, 0, 36, 0, 39, 0, 39, 0, 41, 0, 41, 0], // Building tension
+            [31, 43, 31, 43, 31, 43, 31, 43, 36, 48, 36, 48, 36, 48, 36, 48], // Octave jumps
+            [31, 34, 36, 39, 41, 43, 46, 48, 48, 46, 43, 41, 39, 36, 34, 31]  // Epic sweep
         ],
         melody: [
-            [81, 84, 88, 93, 88, 84, 81, 77, 84, 88, 93, 96, 93, 88, 84, 81], // Trance lead
-            [84, 0, 96, 0, 84, 0, 96, 0, 88, 0, 100, 0, 88, 0, 100, 0], // Gated synth
-            [93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78], // Sweep down
-            [81, 81, 81, 93, 93, 93, 96, 96, 100, 100, 96, 96, 93, 93, 81, 81], // Chord stabs
-            [81, 84, 88, 93, 81, 84, 88, 93, 84, 88, 93, 96, 84, 88, 93, 96], // Fast arp
-            [0, 81, 0, 93, 0, 84, 0, 96, 0, 88, 0, 100, 0, 93, 0, 105], // Sparse hits
-            [96, 96, 93, 93, 88, 88, 84, 84, 100, 100, 96, 96, 93, 93, 88, 88], // Alternating
-            [81, 84, 88, 93, 96, 100, 105, 108, 105, 100, 96, 93, 88, 84, 81, 0] // Epic climb
+            [67, 0, 67, 70, 0, 74, 0, 70, 67, 0, 0, 0, 0, 0, 0, 0], // Catchy hook A
+            [79, 0, 79, 77, 0, 74, 0, 70, 74, 0, 0, 0, 0, 0, 0, 0], // Hook response B
+            [67, 70, 74, 79, 74, 70, 67, 0, 65, 69, 72, 77, 72, 69, 65, 0], // Classic arpeggio
+            [67, 67, 67, 70, 70, 70, 74, 74, 79, 79, 79, 77, 74, 72, 70, 67], // Strong melody
+            [62, 0, 65, 0, 69, 0, 74, 0, 69, 0, 65, 0, 62, 0, 0, 0], // Lower counter-melody
+            [67, 0, 74, 0, 79, 0, 82, 0, 79, 74, 70, 67, 65, 62, 60, 0], // Descending heroic
+            [79, 79, 0, 79, 77, 77, 0, 77, 74, 74, 0, 74, 72, 72, 0, 72], // Triumphant theme
+            [67, 70, 74, 79, 82, 86, 91, 94, 91, 86, 82, 79, 74, 70, 67, 0] // Victory fanfare
         ],
         perc: [
-            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0], // Four-on-floor
-            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 1], // Building
-            [1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0], // Steady pulse
-            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1], // Double time
-            [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], // Rapid fire
-            [1, 0, 1, 0, 2, 0, 2, 0, 1, 0, 1, 0, 2, 2, 2, 2], // Breakdown
-            [1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2], // Power beats
-            [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2]  // Full intensity
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0], // Simple kick/snare
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 0], // Adding fills
+            [1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0], // Steady driving
+            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1], // Energetic push
+            [1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 0, 2, 0, 1, 0], // Varied rhythm
+            [1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 1, 0, 2, 2, 2, 0], // Building up
+            [1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 2, 2], // Climax section
+            [1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2]  // Maximum intensity
         ]
     };
 
@@ -1185,12 +1185,14 @@ class Enemy {
     hp = 1;
     maxHp = 1;
     type: 'WALKER' | 'FLYER' | 'TURRET' | 'DASHER' | 'ELITE' | 'HEAVY' | 'BOSS' = 'WALKER';
-    bossType?: BossType;
     attackTimer = 0;
     name: string = '';
-    knockbackResist = 0;
+    bossType: 'ASSAULT' | 'BOMBER' | 'TANK' | 'SPEED' | null = null;
+    knockbackResist: number = 0;
+    attackMode: number = 0; // For BOSS attack pattern switching
+    attackModeTimer: number = 0; // Timer for attack mode rotation
 
-    constructor(id: number, x: number, y: number, speedMod: number, difficultyMult: number = 1.0, typeOverride?: string) {
+    constructor(id: number, x: number, y: number, difficultyMult: number = 1, speedMod: number = 1, typeOverride: string | null = null) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -1240,9 +1242,11 @@ class Enemy {
         } else if (this.type === 'BOSS') {
             this.width = 120;
             this.height = 140;
-            this.hp = 1500 * hpScale;
-            this.maxHp = 1500 * hpScale;
+            this.hp = 1000 * hpScale; // Reduced from 1500 (1/3 reduction)
+            this.maxHp = 1000 * hpScale;
             this.knockbackResist = 1.0;
+            this.attackMode = 0; // Track current attack pattern
+            this.attackModeTimer = 0; // Timer to switch modes
         }
         this.maxHp = this.hp;
     }
@@ -1336,68 +1340,178 @@ class Enemy {
 
         const cdr = Math.min(30, difficultyLevel * 2);
 
-        // --- BOSS AI ---
-        if (this.bossType === 'ASSAULT') {
-            const targetY = CANVAS_HEIGHT - 200;
-            this.y += (targetY - this.y) * 0.05;
-            const idealX = target.x + (target.x > this.x ? -300 : 300);
-            this.x += (idealX - this.x) * 0.02; // Reduced from 0.03
 
-            if (this.attackTimer % (80 - cdr) === 0) {
-                soundEngine.playShoot();
-                for (let i = -3; i <= 3; i++) {
-                    const angle = Math.atan2(target.y - this.y, target.x - this.x) + (i * 0.15);
-                    projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 2.1, Math.sin(angle) * 2.1)); // Further halved to 50%
+        // --- REDESIGNED BOSS AI WITH VARIED ATTACK PATTERNS ---
+        if (this.type === 'BOSS') {
+            // Attack mode switching: change pattern every 5-8 seconds
+            this.attackModeTimer++;
+            if (this.attackModeTimer > 300 + Math.random() * 180) { // 5-8 seconds
+                this.attackMode = (this.attackMode + 1) % 3; // Cycle through 3 modes
+                this.attackModeTimer = 0;
+            }
+
+            const attackCooldown = 210 + Math.floor(Math.random() * 90); // 3.5-5 seconds at 60fps
+
+            if (this.bossType === 'ASSAULT') {
+                // Aerial assault boss with 3 attack patterns
+                const targetY = CANVAS_HEIGHT - 200;
+                this.y += (targetY - this.y) * 0.05;
+                const idealX = target.x + (target.x > this.x ? -300 : 300);
+                this.x += (idealX - this.x) * 0.02;
+
+                if (this.attackMode === 0) {
+                    // Mode 0: Spread shot barrage
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let i = -4; i <= 4; i++) {
+                            const angle = Math.atan2(target.y - this.y, target.x - this.x) + (i * 0.2);
+                            projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 2.1, Math.sin(angle) * 2.1));
+                        }
+                    }
+                } else if (this.attackMode === 1) {
+                    // Mode 1: Rapid triple shot
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let burst = 0; burst < 3; burst++) {
+                            setTimeout(() => {
+                                const angle = Math.atan2(target.y - this.y, target.x - this.x);
+                                projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 3.5, Math.sin(angle) * 3.5));
+                            }, burst * 150);
+                        }
+                    }
+                } else {
+                    // Mode 2: Homing missiles
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let i = -1; i <= 1; i++) {
+                            const angle = Math.atan2(target.y - this.y, target.x - this.x) + (i * 0.3);
+                            projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 2.5, Math.sin(angle) * 2.5));
+                        }
+                    }
                 }
             }
-        }
-        else if (this.bossType === 'BOMBER') {
-            const targetY = CANVAS_HEIGHT - 400;
-            this.y += (targetY - this.y) * 0.05;
-            this.x += (target.x - this.x) * 0.03; // Reduced from 0.04
+            else if (this.bossType === 'BOMBER') {
+                // Aerial bomber with carpet bombing patterns
+                const targetY = CANVAS_HEIGHT - 400;
+                this.y += (targetY - this.y) * 0.05;
+                this.x += (target.x - this.x) * 0.03;
 
-            if (this.attackTimer % (60 - cdr) === 0) {
-                soundEngine.playShoot();
-                const p = new Projectile(this.x + this.width / 2, this.y + this.height, (Math.random() - 0.5) * 0.875, 2.1); // Further halved
-                p.width = 25; p.height = 25;
-                projectiles.push(p);
+                if (this.attackMode === 0) {
+                    // Mode 0: Carpet bomb drop
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let i = -2; i <= 2; i++) {
+                            const p = new Projectile(this.x + this.width / 2 + i * 30, this.y + this.height, (Math.random() - 0.5) * 0.5, 2.5);
+                            p.width = 25; p.height = 25;
+                            projectiles.push(p);
+                        }
+                    }
+                } else if (this.attackMode === 1) {
+                    // Mode 1: Cluster bombs
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        const p = new Projectile(this.x + this.width / 2, this.y + this.height, 0, 1.8);
+                        p.width = 35; p.height = 35;
+                        projectiles.push(p);
+                    }
+                } else {
+                    // Mode 2: Diagonal bomb spray
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let i = -2; i <= 2; i++) {
+                            const p = new Projectile(this.x + this.width / 2, this.y + this.height, i * 1.5, 2.0);
+                            p.width = 20; p.height = 20;
+                            projectiles.push(p);
+                        }
+                    }
+                }
             }
-        }
-        else if (this.bossType === 'TANK') {
-            this.y += GRAVITY_DEFAULT;
-            if (this.y + this.height > CANVAS_HEIGHT - 40) this.y = CANVAS_HEIGHT - 40 - this.height;
+            else if (this.bossType === 'TANK') {
+                // Heavy tank boss with powerful but slow attacks
+                this.y += GRAVITY_DEFAULT;
+                if (this.y + this.height > CANVAS_HEIGHT - 40) this.y = CANVAS_HEIGHT - 40 - this.height;
 
-            if (this.x < target.x - 400) this.x += 1.0; // Reduced from 1.5
-            else if (this.x > target.x + 400) this.x -= 1.0;
+                if (this.x < target.x - 400) this.x += 1.0;
+                else if (this.x > target.x + 400) this.x -= 1.0;
 
-            if (this.attackTimer % (140 - cdr * 2) === 0) {
-                soundEngine.playShoot();
-                const angle = Math.atan2(target.y - this.y, target.x - this.x);
-                const speed = 1.4 + (difficultyLevel * 0.0875); // Further halved
-                const p = new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * speed, Math.sin(angle) * speed);
-                p.width = 70; p.height = 70;
-                projectiles.push(p);
+                if (this.attackMode === 0) {
+                    // Mode 0: Single heavy cannon
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        const angle = Math.atan2(target.y - this.y, target.x - this.x);
+                        const speed = 2.0;
+                        const p = new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * speed, Math.sin(angle) * speed);
+                        p.width = 80; p.height = 80;
+                        projectiles.push(p);
+                    }
+                } else if (this.attackMode === 1) {
+                    // Mode 1: Shotgun blast
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        const baseAngle = Math.atan2(target.y - this.y, target.x - this.x);
+                        for (let i = -2; i <= 2; i++) {
+                            const angle = baseAngle + (i * 0.25);
+                            const p = new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 2.5, Math.sin(angle) * 2.5);
+                            p.width = 50; p.height = 50;
+                            projectiles.push(p);
+                        }
+                    }
+                } else {
+                    // Mode 2: Ground shockwave pattern
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        for (let dir of [-1, 1]) {
+                            const p = new Projectile(this.x + this.width / 2, this.y + this.height, dir * 3.0, 0);
+                            p.width = 60; p.height = 40;
+                            projectiles.push(p);
+                        }
+                    }
+                }
             }
-        }
-        else if (this.bossType === 'SPEED') {
-            const groundY = CANVAS_HEIGHT - 40 - this.height;
-            this.y = groundY;
+            else if (this.bossType === 'SPEED') {
+                // Speed boss - NO DASH, focus on rapid projectiles from different positions
+                const groundY = CANVAS_HEIGHT - 40 - this.height;
+                this.y = groundY;
 
-            const cycle = 110 - cdr * 2;
-
-            if (this.attackTimer % cycle < 30) {
-                // Prepare
-            } else if (this.attackTimer % cycle < 50) {
-                // Dash
-                this.x += (target.x > this.x ? 8 : -8); // Much reduced from 20
-            } else {
-                // Idle move
-                this.x += (target.x - this.x) * 0.02; // Reduced from 0.03
+                // Move horizontally to different positions
+                const moveSpeed = 2.0;
+                if (this.attackMode === 0) {
+                    // Mode 0: Rapid fire while circling
+                    this.x += moveSpeed * (target.x > this.x ? 1 : -1);
+                    if (this.attackTimer % (attackCooldown / 2) === 0) {
+                        soundEngine.playShoot();
+                        const angle = Math.atan2(target.y - this.y, target.x - this.x);
+                        projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 3.5, Math.sin(angle) * 3.5));
+                    }
+                } else if (this.attackMode === 1) {
+                    // Mode 1: Teleport and burst fire
+                    if (this.attackTimer % attackCooldown === 0) {
+                        // Teleport to random position
+                        this.x = target.x + (Math.random() > 0.5 ? 400 : -400);
+                        soundEngine.playShoot();
+                        // Fire burst
+                        for (let i = 0; i < 5; i++) {
+                            const angle = Math.atan2(target.y - this.y, target.x - this.x) + (i - 2) * 0.15;
+                            projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 3.0, Math.sin(angle) * 3.0));
+                        }
+                    } else {
+                        this.x += (target.x - this.x) * 0.02;
+                    }
+                } else {
+                    // Mode 2: Strafe and precision shots
+                    const strafeDir = Math.sin(this.attackTimer * 0.05) * 3.0;
+                    this.x += strafeDir;
+                    if (this.attackTimer % attackCooldown === 0) {
+                        soundEngine.playShoot();
+                        const angle = Math.atan2(target.y - this.y, target.x - this.x);
+                        projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 4.0, Math.sin(angle) * 4.0));
+                    }
+                }
             }
-        }
 
-        if (this.x < 0) this.x = 0;
-        if (this.x > WORLD_WIDTH - this.width) this.x = WORLD_WIDTH - this.width;
+            if (this.x < 0) this.x = 0;
+            if (this.x > WORLD_WIDTH - this.width) this.x = WORLD_WIDTH - this.width;
+        }
     }
 
     draw(ctx: CanvasRenderingContext2D, cameraX: number) {
@@ -2098,7 +2212,7 @@ const CyberpunkGame = () => {
                         const txt = BOSS_BANTER[Math.floor(Math.random() * BOSS_BANTER.length)];
                         g.floatingTexts.push(new FloatingText(0, 0, txt, '#ff4444', 16, true, g.boss, 4.0)); // Increased from 1.8 to 4.0
                     }
-                    g.combatBanterTimer = 240 + Math.random() * 120;
+                    g.combatBanterTimer = 420 + Math.random() * 120; // 7-9 seconds at 60fps
                 }
 
                 let targetCamX = p.x - CANVAS_WIDTH / 2.5;
