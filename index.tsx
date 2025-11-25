@@ -2469,7 +2469,7 @@ const CyberpunkGame = () => {
                 </div>
 
                 <div className="flex items-center">
-                    <span className="text-yellow-400 text-lg mr-2 w-20 font-bold">能量</span>
+                    <span className="text-yellow-400 text-lg mr-2 w-20 font-bold">能量值</span>
                     <div className="w-72 h-7 bg-gray-900 border-2 border-yellow-500 skew-x-[-12deg] relative">
                         <div ref={energyBarRef} className="h-full bg-yellow-400 transition-none shadow-[0_0_15px_#fbbf24]" style={{ width: '0%' }}></div>
                         <div ref={energyTextRef} className="absolute inset-0 flex items-center justify-center text-sm font-black text-black animate-pulse hidden">
@@ -2496,7 +2496,7 @@ const CyberpunkGame = () => {
 
             {/* Right HUD */}
             <div className={`absolute top-5 right-5 text-right z-10 scale-110 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
-                <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">擊殺數</h2>
+                <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">BOSS殺數</h2>
                 <p className="text-6xl text-red-500 font-bold drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">{bossDefeatedCount}</p>
                 <h2 className="text-lg font-bold text-gray-400 font-arcade mt-2">生存時間</h2>
                 <p className="text-4xl text-white font-bold">{formatTime(survivalTime)}</p>
@@ -2659,7 +2659,7 @@ const CyberpunkGame = () => {
                         onClick={gameRef.current.isGameActive ? resumeGame : startGame}
                         className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse"
                     >
-                        {gameRef.current.isGameActive ? "恢復連線 (RESUME)" : "開始連結 (START LINK)"}
+                        {gameRef.current.isGameActive ? "返回戰鬥" : "【 Let's Go!ヾ(=^･ω･^=)丿 】"}
                     </button>
                 </div>
             )}
