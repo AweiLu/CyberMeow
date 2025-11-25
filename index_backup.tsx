@@ -1355,10 +1355,10 @@ class Enemy {
             if (this.bossType === 'ASSAULT') {
                 // Aerial assault boss - stay at player's level, moderate distance
                 const targetY = CANVAS_HEIGHT - 250;
-                this.y += (targetY - this.y) * 0.025; // Halved from 0.05
+                this.y += (targetY - this.y) * 0.05;
                 // Stay at a reasonable distance, but not too far
                 const idealX = target.x + (target.x > this.x ? -200 : 200);
-                this.x += (idealX - this.x) * 0.02; // Halved from 0.04
+                this.x += (target.x - this.x) * 0.015; // Reduced to 50% (was 0.03)% speed (was 0.04)
 
                 if (this.attackMode === 0) {
                     // Mode 0: Spread shot barrage
@@ -1394,8 +1394,8 @@ class Enemy {
             else if (this.bossType === 'BOMBER') {
                 // Aerial bomber with carpet bombing patterns
                 const targetY = CANVAS_HEIGHT - 400;
-                this.y += (targetY - this.y) * 0.025; // Halved from 0.05
-                this.x += (target.x - this.x) * 0.015; // Halved from 0.03
+                this.y += (targetY - this.y) * 0.05;
+                this.x += (target.x - this.x) * 0.03;
 
                 if (this.attackMode === 0) {
                     // Mode 0: Carpet bomb drop
@@ -1432,7 +1432,7 @@ class Enemy {
                 this.y += GRAVITY_DEFAULT;
                 if (this.y + this.height > CANVAS_HEIGHT - 40) this.y = CANVAS_HEIGHT - 40 - this.height;
 
-                if (this.x < target.x - 400) this.x += 0.5; // Halved from 1.0
+                if (this.x < target.x - 400) this.x += 0.5; // Reduced to 50%
                 else if (this.x > target.x + 400) this.x -= 0.5;
 
                 if (this.attackMode === 0) {
@@ -1475,7 +1475,7 @@ class Enemy {
                 this.y = groundY;
 
                 // Move horizontally to different positions
-                const moveSpeed = 1.0; // Halved from 2.0
+                const moveSpeed = 1.0; // Reduced to 50% (was 2.0)
                 if (this.attackMode === 0) {
                     // Mode 0: Rapid fire while circling
                     this.x += moveSpeed * (target.x > this.x ? 1 : -1);
@@ -1496,11 +1496,11 @@ class Enemy {
                             projectiles.push(new Projectile(this.x + this.width / 2, this.y + this.height / 2, Math.cos(angle) * 2.6, Math.sin(angle) * 2.6)); // Reduced speed
                         }
                     } else {
-                        this.x += (target.x - this.x) * 0.01; // Halved from 0.02
+                        this.x += (target.x - this.x) * 0.02;
                     }
                 } else {
                     // Mode 2: Strafe and precision shots
-                    const strafeDir = Math.sin(this.attackTimer * 0.05) * 3.0;
+                    const strafeDir = Math.sin(this.attackTimer * 0.05) * 1.5; // Reduced to 50%
                     this.x += strafeDir;
                     if (this.attackTimer % attackCooldown === 0) {
                         soundEngine.playShoot();
@@ -2611,7 +2611,7 @@ const CyberpunkGame = () => {
 
             {/* Right HUD */}
             <div className={`absolute top-5 right-5 text-right z-10 scale-110 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
-                <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">BOSS擊殺</h2>
+                <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">BOSS殺數</h2>
                 <p className="text-6xl text-red-500 font-bold drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">{bossDefeatedCount}</p>
                 <h2 className="text-lg font-bold text-gray-400 font-arcade mt-2">生存時間</h2>
                 <p className="text-4xl text-white font-bold">{formatTime(survivalTime)}</p>
