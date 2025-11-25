@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { GoogleGenAI } from "@google/genai";
@@ -9,9 +8,9 @@ let CANVAS_HEIGHT = window.innerHeight;
 const WORLD_WIDTH = 6000; 
 
 // Physics Tuning: HARDCORE GRAVITY
-const GRAVITY_DEFAULT = 4.5; 
-const JUMP_FORCE_DEFAULT = -38;
-const SPEED_DEFAULT = 12;
+const GRAVITY_DEFAULT = 1.125; // Adjusted for 60FPS (Was 4.5)
+const JUMP_FORCE_DEFAULT = -19; // Adjusted for 60FPS (Was -38)
+const SPEED_DEFAULT = 6; // Adjusted for 60FPS (Was 12)
 const MAX_STAMINA = 100;
 const STAMINA_COST_DODGE = 35;
 const STAMINA_COST_DOUBLE_JUMP = 25;
@@ -1576,6 +1575,7 @@ function formatTime(milliseconds: number): string {
 // --- Main Component ---
 const CyberpunkGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastFrameTimeRef = useRef(0);
   const hpBarRef = useRef<HTMLDivElement>(null);
   const energyBarRef = useRef<HTMLDivElement>(null);
   const energyTextRef = useRef<HTMLDivElement>(null);
@@ -1608,7 +1608,6 @@ const CyberpunkGame = () => {
     floatingTexts: [] as FloatingText[],
     keys: {} as Record<string, boolean>,
     screenShake: 0,
-    cameraX: 0,
     glitchIntensity: 0,
     isFetchingBoss: false,
     nextBossSpawnReady: false,
@@ -1629,6 +1628,15 @@ const CyberpunkGame = () => {
         }
         initLevel();
     };
+    
+    // Initialize canvas size immediately
+    if (canvasRef.current) {
+        CANVAS_WIDTH = window.innerWidth;
+        CANVAS_HEIGHT = window.innerHeight;
+        canvasRef.current.width = CANVAS_WIDTH;
+        canvasRef.current.height = CANVAS_HEIGHT;
+    }
+
     window.addEventListener('resize', handleResize);
     
     initLevel();
@@ -1695,6 +1703,15 @@ const CyberpunkGame = () => {
   }, [gameState]);
 
   const startGame = () => {
+      // Ensure dimensions are correct and re-init level
+      CANVAS_WIDTH = window.innerWidth;
+      CANVAS_HEIGHT = window.innerHeight;
+      if (canvasRef.current) {
+          canvasRef.current.width = CANVAS_WIDTH;
+          canvasRef.current.height = CANVAS_HEIGHT;
+      }
+      initLevel();
+
       soundEngine.init();
       soundEngine.playStartGame();
       setTimeout(() => soundEngine.startBGM('COMBAT'), 500);
@@ -1960,396 +1977,413 @@ const CyberpunkGame = () => {
     if (!ctx) return;
 
     let animationId: number;
+    const TARGET_FPS = 60;
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
-    const render = () => {
-      if (gameState === 'PLAYING') {
-        const g = gameRef.current;
-        g.currentTime = Date.now();
-        const elapsedSec = (g.currentTime - g.startTime) / 1000;
-        
-        setSurvivalTime(g.currentTime - g.startTime);
+    const render = (timestamp: number) => {
+      if (!lastFrameTimeRef.current) lastFrameTimeRef.current = timestamp;
+      const deltaTime = timestamp - lastFrameTimeRef.current;
 
-        const p = g.player;
-        
-        if (hpBarRef.current) hpBarRef.current.style.width = `${Math.max(0, (p.hp / p.maxHp) * 100)}%`; 
-        if (energyBarRef.current) energyBarRef.current.style.width = `${Math.min(100, p.energy)}%`;
-        if (energyTextRef.current) energyTextRef.current.style.display = p.energy >= 99 ? 'flex' : 'none';
-        // Stamina Bar Update
-        if (staminaBarRef.current) {
-            const pct = Math.max(0, (p.stamina / p.maxStamina) * 100);
-            staminaBarRef.current.style.height = `${pct}%`;
-            staminaBarRef.current.style.filter = p.stamina < STAMINA_COST_DOUBLE_JUMP ? 'grayscale(100%)' : 'none';
-        }
+      if (deltaTime >= FRAME_INTERVAL) {
+        // Cap deltaTime to prevent huge jumps if tab was inactive
+        const safeDelta = Math.min(deltaTime, 100);
+        lastFrameTimeRef.current = timestamp - (deltaTime % FRAME_INTERVAL);
 
-        if (g.nextBossSpawnReady && !g.boss) spawnBossNow();
-
-        const spawnRate = g.boss ? 0.01 : 0.03; 
-        if (Math.random() < spawnRate + (bossDefeatedCount * 0.005) + (elapsedSec / 1000)) {
-            const ex = Math.random() > 0.5 ? p.x + 800 : p.x - 800;
-            if (ex > 100 && ex < WORLD_WIDTH - 100) {
-                const timeScale = 1 + (elapsedSec / 60) * 0.2; 
-                g.enemies.push(new Enemy(entityIdCounter.current++, ex, 100, 1 + (bossDefeatedCount*0.1), timeScale));
+        if (gameState === 'PLAYING') {
+            // Ensure canvas dimensions are synced
+            if (canvas.width !== CANVAS_WIDTH || canvas.height !== CANVAS_HEIGHT) {
+                CANVAS_WIDTH = canvas.width;
+                CANVAS_HEIGHT = canvas.height;
             }
-        }
 
-        // --- Banter Logic (4-6s) ---
-        if (g.combatBanterTimer > 0) {
-            g.combatBanterTimer--;
-        } else {
-            // 4-6 seconds @ 60fps = 240 - 360 frames
-            if (Math.random() > 0.5) {
-                const txt = PLAYER_BANTER[Math.floor(Math.random() * PLAYER_BANTER.length)];
-                g.floatingTexts.push(new FloatingText(0, 0, txt, '#00f3ff', 16, true, p, 1.8));
-            } else if (g.boss) {
-                const txt = BOSS_BANTER[Math.floor(Math.random() * BOSS_BANTER.length)];
-                g.floatingTexts.push(new FloatingText(0, 0, txt, '#ff4444', 16, true, g.boss, 1.8));
-            }
-            g.combatBanterTimer = 240 + Math.random() * 120;
-        }
-
-        let targetCamX = p.x - CANVAS_WIDTH / 2.5; 
-        if (targetCamX < 0) targetCamX = 0;
-        if (targetCamX > WORLD_WIDTH - CANVAS_WIDTH) targetCamX = WORLD_WIDTH - CANVAS_WIDTH;
-        g.cameraX += (targetCamX - g.cameraX) * 0.1;
-
-        let shakeX = 0, shakeY = 0;
-        if (g.screenShake > 0) {
-            shakeX = (Math.random() - 0.5) * g.screenShake;
-            shakeY = (Math.random() - 0.5) * g.screenShake;
-            g.screenShake *= 0.9;
-        }
-        ctx.save();
-        ctx.translate(shakeX, shakeY);
-        if (Math.random() < g.glitchIntensity) ctx.translate(Math.random() * 20 - 10, 0);
-        g.glitchIntensity *= 0.9;
-
-        ctx.fillStyle = COLORS.background;
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        g.buildings.sort((a,b) => a.parallaxFactor - b.parallaxFactor).forEach(b => b.draw(ctx, g.cameraX));
-        g.platforms.forEach(plat => plat.draw(ctx, g.cameraX));
-        g.interactiveObjects.forEach(obj => obj.draw(ctx, g.cameraX));
-
-        // PHYSICS UPDATE
-        p.vx *= 0.8; 
-        if (Math.abs(p.vx) < 0.1) p.vx = 0;
-        
-        const speedMod = p.buffTimer > 0 ? 1.5 : 1.0; 
-        const currentSpeed = SPEED_DEFAULT * speedMod;
-
-        if (g.keys['ArrowLeft'] || g.keys['KeyA']) {
-          p.vx = -currentSpeed;
-          p.facingRight = false;
-        }
-        if (g.keys['ArrowRight'] || g.keys['KeyD']) {
-          p.vx = currentSpeed;
-          p.facingRight = true;
-        }
-        // Note: Jump logic is handled in keyDown to prevent continuous jumping
-        p.update(GRAVITY_DEFAULT, g.platforms, g.interactiveObjects);
-
-        // ITEMS UPDATE
-        for (let i = g.items.length - 1; i >= 0; i--) {
-            const item = g.items[i];
-            item.update(g.platforms);
-            item.draw(ctx, g.cameraX);
-
-            // Check collision with player
-            if (
-                p.x < item.x + item.width &&
-                p.x + p.width > item.x &&
-                p.y < item.y + item.height &&
-                p.y + p.height > item.y
-            ) {
-                if (item.type === 'HEALTH') {
-                    p.hp = Math.min(p.maxHp, p.hp + (p.maxHp * 0.25)); // +25%
-                    soundEngine.playCollect();
-                    g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "+HP", COLORS.itemHealth));
-                } else if (item.type === 'ENERGY') {
-                    p.energy = Math.min(100, p.energy + 35); 
-                    p.stamina = Math.min(p.maxStamina, p.stamina + 50); // +50 Stamina
-                    soundEngine.playCollect();
-                    g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "+ENERGY", COLORS.itemEnergy));
-                } else if (item.type === 'BOOST') {
-                    p.buffTimer = 420; 
-                    soundEngine.playPowerUp();
-                    g.screenShake = 10;
-                    g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "MAX POWER!", COLORS.itemBoost, 30));
-                    for(let j=0; j<10; j++) g.particles.push(new Particle(p.x+16, p.y+16, '#ff00ff', 2));
-                } else if (item.type === 'SHIELD') {
-                    p.hasShield = true;
-                    soundEngine.playShieldUp();
-                    g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "SHIELD UP", COLORS.itemShield));
-                }
-                g.items.splice(i, 1);
-            }
-        }
-
-        // PROJECTILES
-        for (let i = g.projectiles.length - 1; i >= 0; i--) {
-            const proj = g.projectiles[i];
-            proj.update();
-            proj.draw(ctx, g.cameraX);
+            const g = gameRef.current;
+            g.currentTime = Date.now();
+            const elapsedSec = (g.currentTime - g.startTime) / 1000;
             
-            if (proj.isUltimate && !proj.hasExploded) {
-                let hit = false;
-                // Loose hitbox check
-                for (const e of g.enemies) {
-                     const dx = proj.x - (e.x + e.width/2);
-                     const dy = proj.y - (e.y + e.height/2);
-                     if (Math.abs(dx) < 80 && Math.abs(dy) < 80) {
-                         hit = true;
-                         break;
-                     }
-                }
+            setSurvivalTime(g.currentTime - g.startTime);
 
-                if (hit) {
-                    proj.hasExploded = true;
-                    g.projectiles.splice(i, 1);
-                    g.explosions.push(new Explosion(proj.x, proj.y));
-                    g.screenShake = 50;
-                    soundEngine.playExplosion();
-                    
-                    for (let k = g.enemies.length - 1; k >= 0; k--) {
-                        const e = g.enemies[k];
-                        const dx = proj.x - (e.x + e.width/2);
-                        const dy = proj.y - (e.y + e.height/2);
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < 400) { 
-                            // RNG Damage Logic
-                            const r = Math.random();
-                            let dmg = 404;
-                            let color = '#fff';
-                            if (r < 0.40) { dmg = 404; color = '#cccccc'; }
-                            else if (r < 0.65) { dmg = 520; color = '#ff69b4'; }
-                            else if (r < 0.90) { dmg = 666; color = '#ff0000'; }
-                            else { dmg = 777; color = '#ffd700'; }
-
-                            if (e.type === 'BOSS') {
-                                // Cap boss dmg at 20% max HP, but show the RNG number visually
-                                const actualDmg = Math.min(e.hp, e.maxHp * 0.20);
-                                e.hp -= actualDmg;
-                                g.floatingTexts.push(new FloatingText(e.x, e.y, `${dmg}!!`, color, 50));
-                            } else {
-                                g.floatingTexts.push(new FloatingText(e.x, e.y, `${dmg}!!`, color, 30));
-                                e.hp -= dmg;
-                            }
-                            
-                            e.vy = -15; 
-                            e.x += (e.x > proj.x ? 50 : -50);
-                            
-                            if (e.hp <= 0) {
-                                let dropChance = 0.05; 
-                                if (e.type === 'ELITE' || e.type === 'HEAVY') dropChance = 0.5;
-                                else if (e.type === 'BOSS') dropChance = 1.0;
-
-                                if (Math.random() < dropChance) {
-                                    const r = Math.random();
-                                    let type: 'HEALTH' | 'ENERGY' | 'BOOST' | 'SHIELD';
-                                    if (r < 0.3) type = 'HEALTH';
-                                    else if (r < 0.6) type = 'ENERGY';
-                                    else if (r < 0.85) type = 'BOOST';
-                                    else type = 'SHIELD';
-                                    
-                                    g.items.push(new Item(e.x + e.width/2, e.y, type));
-                                }
-
-                                g.enemies.splice(k, 1);
-                                setScore(s => s + (e.type === 'BOSS' ? 5000 : (e.type === 'ELITE' ? 300 : 100)));
-                                soundEngine.playExplosion();
-                                
-                                if (e.type === 'BOSS') {
-                                    g.boss = null; 
-                                    setBossHp(prev => ({...prev, current: 0}));
-                                    setBossDefeatedCount(prev => prev + 1);
-                                    soundEngine.playBossDeath();
-                                    startBossTimer(15); 
-                                }
-                            } else {
-                                if (e.type === 'BOSS') setBossHp(prev => ({ ...prev, current: e.hp }));
-                            }
-                        }
-                    }
-                    continue;
-                }
-            } else if (proj.life <= 0) {
-                g.projectiles.splice(i, 1);
-                continue;
+            const p = g.player;
+            
+            if (hpBarRef.current) hpBarRef.current.style.width = `${Math.max(0, (p.hp / p.maxHp) * 100)}%`; 
+            if (energyBarRef.current) energyBarRef.current.style.width = `${Math.min(100, p.energy)}%`;
+            if (energyTextRef.current) energyTextRef.current.style.display = p.energy >= 99 ? 'flex' : 'none';
+            // Stamina Bar Update
+            if (staminaBarRef.current) {
+                const pct = Math.max(0, (p.stamina / p.maxStamina) * 100);
+                staminaBarRef.current.style.height = `${pct}%`;
+                staminaBarRef.current.style.filter = p.stamina < STAMINA_COST_DOUBLE_JUMP ? 'grayscale(100%)' : 'none';
             }
 
-            if (!proj.isPlayer) {
-                if (p.x < proj.x + 10 && p.x + p.width > proj.x && p.y < proj.y + 10 && p.y + p.height > proj.y) {
-                    if (p.invincibleTimer <= 0) {
-                        if (p.hasShield) {
-                            p.hasShield = false;
-                            p.invincibleTimer = 30;
-                            soundEngine.playShieldBreak();
-                            g.floatingTexts.push(new FloatingText(p.x, p.y, "BLOCK", COLORS.itemShield));
-                        } else {
-                            const timeScale = 1 + (elapsedSec / 180) * 0.2; 
-                            p.hp -= Math.floor(15 * timeScale);
-                            p.invincibleTimer = 30; 
-                            g.screenShake = 15;
-                            soundEngine.playHit();
-                            g.floatingTexts.push(new FloatingText(p.x, p.y, `-${Math.floor(15 * timeScale)}`, '#ff0000'));
-                            if (p.hp <= 0) endGame();
-                        }
-                    }
+            if (g.nextBossSpawnReady && !g.boss) spawnBossNow();
+
+            const spawnRate = g.boss ? 0.01 : 0.03; 
+            if (Math.random() < spawnRate + (bossDefeatedCount * 0.005) + (elapsedSec / 1000)) {
+                const ex = Math.random() > 0.5 ? p.x + 800 : p.x - 800;
+                if (ex > 100 && ex < WORLD_WIDTH - 100) {
+                    const timeScale = 1 + (elapsedSec / 60) * 0.2; 
+                    g.enemies.push(new Enemy(entityIdCounter.current++, ex, 100, 1 + (bossDefeatedCount*0.1), timeScale));
                 }
             }
-        }
 
-        for (let i = g.explosions.length - 1; i >= 0; i--) {
-            const exp = g.explosions[i];
-            exp.update();
-            exp.draw(ctx, g.cameraX);
-            if (exp.life <= 0) g.explosions.splice(i, 1);
-        }
+            // --- Banter Logic (4-6s) ---
+            if (g.combatBanterTimer > 0) {
+                g.combatBanterTimer--;
+            } else {
+                // 4-6 seconds @ 60fps = 240 - 360 frames
+                if (Math.random() > 0.5) {
+                    const txt = PLAYER_BANTER[Math.floor(Math.random() * PLAYER_BANTER.length)];
+                    g.floatingTexts.push(new FloatingText(0, 0, txt, '#00f3ff', 16, true, p, 1.8));
+                } else if (g.boss) {
+                    const txt = BOSS_BANTER[Math.floor(Math.random() * BOSS_BANTER.length)];
+                    g.floatingTexts.push(new FloatingText(0, 0, txt, '#ff4444', 16, true, g.boss, 1.8));
+                }
+                g.combatBanterTimer = 240 + Math.random() * 120;
+            }
 
-        for (let i = g.visualEffects.length - 1; i >= 0; i--) {
-            const fx = g.visualEffects[i];
-            fx.update();
-            fx.draw(ctx, g.cameraX);
-            if (fx.life <= 0) g.visualEffects.splice(i, 1);
-        }
+            let targetCamX = p.x - CANVAS_WIDTH / 2.5; 
+            if (targetCamX < 0) targetCamX = 0;
+            if (targetCamX > WORLD_WIDTH - CANVAS_WIDTH) targetCamX = WORLD_WIDTH - CANVAS_WIDTH;
+            g.cameraX += (targetCamX - g.cameraX) * 0.1;
 
-        for (let i = g.floatingTexts.length - 1; i >= 0; i--) {
-            const ft = g.floatingTexts[i];
-            ft.update();
-            ft.draw(ctx, g.cameraX);
-            if (ft.life <= 0) g.floatingTexts.splice(i, 1);
-        }
+            let shakeX = 0, shakeY = 0;
+            if (g.screenShake > 0) {
+                shakeX = (Math.random() - 0.5) * g.screenShake;
+                shakeY = (Math.random() - 0.5) * g.screenShake;
+                g.screenShake *= 0.9;
+            }
+            ctx.save();
+            ctx.translate(shakeX, shakeY);
+            if (Math.random() < g.glitchIntensity) ctx.translate(Math.random() * 20 - 10, 0);
+            g.glitchIntensity *= 0.9;
 
-        for (let i = g.enemies.length - 1; i >= 0; i--) {
-          const e = g.enemies[i];
-          e.update(p, g.platforms, g.projectiles, bossDefeatedCount);
-          e.draw(ctx, g.cameraX);
+            ctx.fillStyle = COLORS.background;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            g.buildings.sort((a,b) => a.parallaxFactor - b.parallaxFactor).forEach(b => b.draw(ctx, g.cameraX));
+            g.platforms.forEach(plat => plat.draw(ctx, g.cameraX));
+            g.interactiveObjects.forEach(obj => obj.draw(ctx, g.cameraX));
 
-          const hitPadding = e.type === 'BOSS' ? 10 : 0; 
-          
-          if (
-              p.x < e.x + e.width - hitPadding && 
-              p.x + p.width > e.x + hitPadding && 
-              p.y < e.y + e.height - hitPadding && 
-              p.y + p.height > e.y + hitPadding
-            ) {
-             if (p.invincibleTimer <= 0) {
-                 if (p.hasShield) {
-                     p.hasShield = false;
-                     p.invincibleTimer = 30;
-                     soundEngine.playShieldBreak();
-                     p.vy = -8;
-                     p.vx = p.x < e.x ? -15 : 15;
-                     g.floatingTexts.push(new FloatingText(p.x, p.y, "BLOCK", COLORS.itemShield));
-                 } else {
-                     const timeScale = 1 + (elapsedSec / 180) * 0.2;
-                     const dmg = Math.floor(10 * timeScale);
-                     p.hp -= dmg;
-                     p.invincibleTimer = 30; 
-                     p.vy = -8;
-                     p.vx = p.x < e.x ? -15 : 15;
-                     soundEngine.playHit();
-                     g.floatingTexts.push(new FloatingText(p.x, p.y, `-${dmg}`, '#ff0000'));
-                     if (p.hp <= 0) endGame();
-                 }
-             }
-          }
+            // PHYSICS UPDATE
+            p.vx *= 0.8; 
+            if (Math.abs(p.vx) < 0.1) p.vx = 0;
+            
+            const speedMod = p.buffTimer > 0 ? 1.5 : 1.0; 
+            const currentSpeed = SPEED_DEFAULT * speedMod;
 
-          if (p.isAttacking && p.attackActiveFrame > 0) {
-             const attackRange = 110; 
-             const attackX = p.facingRight ? p.x + p.width/2 : p.x - attackRange + p.width/2;
-             
-             if (attackX < e.x + e.width && attackX + attackRange > e.x && p.y < e.y + e.height + 40 && p.y + p.height > e.y - 40) {
+            if (g.keys['ArrowLeft'] || g.keys['KeyA']) {
+              p.vx = -currentSpeed;
+              p.facingRight = false;
+            }
+            if (g.keys['ArrowRight'] || g.keys['KeyD']) {
+              p.vx = currentSpeed;
+              p.facingRight = true;
+            }
+            // Note: Jump logic is handled in keyDown to prevent continuous jumping
+            p.update(GRAVITY_DEFAULT, g.platforms, g.interactiveObjects);
+
+            // ITEMS UPDATE
+            for (let i = g.items.length - 1; i >= 0; i--) {
+                const item = g.items[i];
+                item.update(g.platforms);
+                item.draw(ctx, g.cameraX);
+
+                // Check collision with player
+                if (
+                    p.x < item.x + item.width &&
+                    p.x + p.width > item.x &&
+                    p.y < item.y + item.height &&
+                    p.y + p.height > item.y
+                ) {
+                    if (item.type === 'HEALTH') {
+                        p.hp = Math.min(p.maxHp, p.hp + (p.maxHp * 0.25)); // +25%
+                        soundEngine.playCollect();
+                        g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "+HP", COLORS.itemHealth));
+                    } else if (item.type === 'ENERGY') {
+                        p.energy = Math.min(100, p.energy + 35); 
+                        p.stamina = Math.min(p.maxStamina, p.stamina + 50); // +50 Stamina
+                        soundEngine.playCollect();
+                        g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "+ENERGY", COLORS.itemEnergy));
+                    } else if (item.type === 'BOOST') {
+                        p.buffTimer = 420; 
+                        soundEngine.playPowerUp();
+                        g.screenShake = 10;
+                        g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "MAX POWER!", COLORS.itemBoost, 30));
+                        for(let j=0; j<10; j++) g.particles.push(new Particle(p.x+16, p.y+16, '#ff00ff', 2));
+                    } else if (item.type === 'SHIELD') {
+                        p.hasShield = true;
+                        soundEngine.playShieldUp();
+                        g.floatingTexts.push(new FloatingText(p.x, p.y - 30, "SHIELD UP", COLORS.itemShield));
+                    }
+                    g.items.splice(i, 1);
+                }
+            }
+
+            // PROJECTILES
+            for (let i = g.projectiles.length - 1; i >= 0; i--) {
+                const proj = g.projectiles[i];
+                proj.update();
+                proj.draw(ctx, g.cameraX);
                 
-                if (!p.currentAttackHitSet.has(e.id)) {
-                    p.currentAttackHitSet.add(e.id);
-                    
-                    const damage = 35; 
-                    if (e.type === 'BOSS') {
-                        e.hp -= damage;
-                    } else {
-                        e.hp -= damage;
-                        if (!e.knockbackResist) e.vx = p.facingRight ? 10 : -10; 
+                if (proj.isUltimate && !proj.hasExploded) {
+                    let hit = false;
+                    // Loose hitbox check
+                    for (const e of g.enemies) {
+                         const dx = proj.x - (e.x + e.width/2);
+                         const dy = proj.y - (e.y + e.height/2);
+                         if (Math.abs(dx) < 80 && Math.abs(dy) < 80) {
+                             hit = true;
+                             break;
+                         }
                     }
-                    
-                    if (p.energy < 100) p.energy = Math.min(100, p.energy + 16.7);
 
-                    soundEngine.playHit();
-                    g.particles.push(new Particle(e.x + e.width/2, e.y + e.height/2, '#fff'));
-
-                    if (e.hp <= 0) {
-                        let dropChance = 0.05; 
-                        if (e.type === 'ELITE' || e.type === 'HEAVY') dropChance = 0.5;
-                        else if (e.type === 'BOSS') dropChance = 1.0;
-
-                        if (Math.random() < dropChance) {
-                            const r = Math.random();
-                            let type: 'HEALTH' | 'ENERGY' | 'BOOST' | 'SHIELD';
-                            if (r < 0.3) type = 'HEALTH';
-                            else if (r < 0.6) type = 'ENERGY';
-                            else if (r < 0.85) type = 'BOOST';
-                            else type = 'SHIELD';
-                            
-                            g.items.push(new Item(e.x + e.width/2, e.y, type));
-                        }
-
-                        g.enemies.splice(i, 1);
-                        setScore(s => s + (e.type === 'BOSS' ? 5000 : (e.type === 'ELITE' ? 300 : 100)));
+                    if (hit) {
+                        proj.hasExploded = true;
+                        g.projectiles.splice(i, 1);
+                        g.explosions.push(new Explosion(proj.x, proj.y));
+                        g.screenShake = 50;
                         soundEngine.playExplosion();
                         
-                        if (e.type === 'BOSS') {
-                            g.boss = null; 
-                            setBossHp(prev => ({...prev, current: 0}));
-                            setBossDefeatedCount(prev => prev + 1);
-                            soundEngine.playBossDeath();
-                            startBossTimer(15); 
+                        for (let k = g.enemies.length - 1; k >= 0; k--) {
+                            const e = g.enemies[k];
+                            const dx = proj.x - (e.x + e.width/2);
+                            const dy = proj.y - (e.y + e.height/2);
+                            const dist = Math.sqrt(dx*dx + dy*dy);
+                            if (dist < 400) { 
+                                // RNG Damage Logic
+                                const r = Math.random();
+                                let dmg = 404;
+                                let color = '#fff';
+                                if (r < 0.40) { dmg = 404; color = '#cccccc'; }
+                                else if (r < 0.65) { dmg = 520; color = '#ff69b4'; }
+                                else if (r < 0.90) { dmg = 666; color = '#ff0000'; }
+                                else { dmg = 777; color = '#ffd700'; }
+
+                                if (e.type === 'BOSS') {
+                                    // Cap boss dmg at 20% max HP, but show the RNG number visually
+                                    const actualDmg = Math.min(e.hp, e.maxHp * 0.20);
+                                    e.hp -= actualDmg;
+                                    g.floatingTexts.push(new FloatingText(e.x, e.y, `${dmg}!!`, color, 50));
+                                } else {
+                                    g.floatingTexts.push(new FloatingText(e.x, e.y, `${dmg}!!`, color, 30));
+                                    e.hp -= dmg;
+                                }
+                                
+                                e.vy = -15; 
+                                e.x += (e.x > proj.x ? 50 : -50);
+                                
+                                if (e.hp <= 0) {
+                                    let dropChance = 0.05; 
+                                    if (e.type === 'ELITE' || e.type === 'HEAVY') dropChance = 0.5;
+                                    else if (e.type === 'BOSS') dropChance = 1.0;
+
+                                    if (Math.random() < dropChance) {
+                                        const r = Math.random();
+                                        let type: 'HEALTH' | 'ENERGY' | 'BOOST' | 'SHIELD';
+                                        if (r < 0.3) type = 'HEALTH';
+                                        else if (r < 0.6) type = 'ENERGY';
+                                        else if (r < 0.85) type = 'BOOST';
+                                        else type = 'SHIELD';
+                                        
+                                        g.items.push(new Item(e.x + e.width/2, e.y, type));
+                                    }
+
+                                    g.enemies.splice(k, 1);
+                                    setScore(s => s + (e.type === 'BOSS' ? 5000 : (e.type === 'ELITE' ? 300 : 100)));
+                                    soundEngine.playExplosion();
+                                    
+                                    if (e.type === 'BOSS') {
+                                        g.boss = null; 
+                                        setBossHp(prev => ({...prev, current: 0}));
+                                        setBossDefeatedCount(prev => prev + 1);
+                                        soundEngine.playBossDeath();
+                                        startBossTimer(15); 
+                                    }
+                                } else {
+                                    if (e.type === 'BOSS') setBossHp(prev => ({...prev, current: e.hp}));
+                                }
+                            }
                         }
-                    } else {
-                        if (e.type === 'BOSS') setBossHp(prev => ({...prev, current: e.hp}));
+                        continue;
+                    }
+                } else if (proj.life <= 0) {
+                    g.projectiles.splice(i, 1);
+                    continue;
+                }
+
+                if (!proj.isPlayer) {
+                    if (p.x < proj.x + 10 && p.x + p.width > proj.x && p.y < proj.y + 10 && p.y + p.height > proj.y) {
+                        if (p.invincibleTimer <= 0) {
+                            if (p.hasShield) {
+                                p.hasShield = false;
+                                p.invincibleTimer = 30;
+                                soundEngine.playShieldBreak();
+                                g.floatingTexts.push(new FloatingText(p.x, p.y, "BLOCK", COLORS.itemShield));
+                            } else {
+                                const timeScale = 1 + (elapsedSec / 180) * 0.2; 
+                                p.hp -= Math.floor(15 * timeScale);
+                                p.invincibleTimer = 30; 
+                                g.screenShake = 15;
+                                soundEngine.playHit();
+                                g.floatingTexts.push(new FloatingText(p.x, p.y, `-${Math.floor(15 * timeScale)}`, '#ff0000'));
+                                if (p.hp <= 0) endGame();
+                            }
+                        }
                     }
                 }
-             }
-          }
-        }
+            }
 
-        for (let i = g.particles.length - 1; i >= 0; i--) {
-          const part = g.particles[i];
-          part.update();
-          part.draw(ctx, g.cameraX);
-          if (part.life <= 0) g.particles.splice(i, 1);
-        }
+            for (let i = g.explosions.length - 1; i >= 0; i--) {
+                const exp = g.explosions[i];
+                exp.update();
+                exp.draw(ctx, g.cameraX);
+                if (exp.life <= 0) g.explosions.splice(i, 1);
+            }
 
-        p.draw(ctx, g.cameraX);
-        ctx.restore();
+            for (let i = g.visualEffects.length - 1; i >= 0; i--) {
+                const fx = g.visualEffects[i];
+                fx.update();
+                fx.draw(ctx, g.cameraX);
+                if (fx.life <= 0) g.visualEffects.splice(i, 1);
+            }
 
-        if (!g.boss && bossTimer > 0) {
-             ctx.fillStyle = 'rgba(0,0,0,0.5)';
-             ctx.fillRect(0, 80, CANVAS_WIDTH, 50);
-             ctx.fillStyle = '#ff0055';
-             ctx.font = "bold 24px 'Noto Sans TC'";
-             ctx.textAlign = 'center';
-             ctx.fillText(`警報: 強敵將於 ${bossTimer} 秒後降臨`, CANVAS_WIDTH/2, 115);
-        }
+            for (let i = g.floatingTexts.length - 1; i >= 0; i--) {
+                const ft = g.floatingTexts[i];
+                ft.update();
+                ft.draw(ctx, g.cameraX);
+                if (ft.life <= 0) g.floatingTexts.splice(i, 1);
+            }
 
-        if (g.boss) {
-            const barW = Math.min(500, CANVAS_WIDTH - 40);
-            const barX = (CANVAS_WIDTH - barW) / 2;
-            ctx.fillStyle = 'rgba(0,0,0,0.8)';
-            ctx.fillRect(barX, 50, barW, 25);
-            ctx.fillStyle = '#ff0000';
-            ctx.fillRect(barX, 50, barW * (bossHp.current / bossHp.max), 25);
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(barX, 50, barW, 25);
-            ctx.fillStyle = '#fff';
-            ctx.font = "bold 18px 'Noto Sans TC'";
-            ctx.textAlign = 'center';
-            ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
-        }
+            for (let i = g.enemies.length - 1; i >= 0; i--) {
+              const e = g.enemies[i];
+              e.update(p, g.platforms, g.projectiles, bossDefeatedCount);
+              e.draw(ctx, g.cameraX);
+
+              const hitPadding = e.type === 'BOSS' ? 10 : 0; 
+              
+              if (
+                  p.x < e.x + e.width - hitPadding && 
+                  p.x + p.width > e.x + hitPadding && 
+                  p.y < e.y + e.height - hitPadding && 
+                  p.y + p.height > e.y + hitPadding
+                ) {
+                 if (p.invincibleTimer <= 0) {
+                     if (p.hasShield) {
+                         p.hasShield = false;
+                         p.invincibleTimer = 30;
+                         soundEngine.playShieldBreak();
+                         p.vy = -8;
+                         p.vx = p.x < e.x ? -15 : 15;
+                         g.floatingTexts.push(new FloatingText(p.x, p.y, "BLOCK", COLORS.itemShield));
+                     } else {
+                         const timeScale = 1 + (elapsedSec / 180) * 0.2;
+                         const dmg = Math.floor(10 * timeScale);
+                         p.hp -= dmg;
+                         p.invincibleTimer = 30; 
+                         p.vy = -8;
+                         p.vx = p.x < e.x ? -15 : 15;
+                         soundEngine.playHit();
+                         g.floatingTexts.push(new FloatingText(p.x, p.y, `-${dmg}`, '#ff0000'));
+                         if (p.hp <= 0) endGame();
+                     }
+                 }
+              }
+
+              if (p.isAttacking && p.attackActiveFrame > 0) {
+                 const attackRange = 110; 
+                 const attackX = p.facingRight ? p.x + p.width/2 : p.x - attackRange + p.width/2;
+                 
+                 if (attackX < e.x + e.width && attackX + attackRange > e.x && p.y < e.y + e.height + 40 && p.y + p.height > e.y - 40) {
+                    
+                    if (!p.currentAttackHitSet.has(e.id)) {
+                        p.currentAttackHitSet.add(e.id);
+                        
+                        const damage = 35; 
+                        if (e.type === 'BOSS') {
+                            e.hp -= damage;
+                        } else {
+                            e.hp -= damage;
+                            if (!e.knockbackResist) e.vx = p.facingRight ? 10 : -10; 
+                        }
+                        
+                        if (p.energy < 100) p.energy = Math.min(100, p.energy + 16.7);
+
+                        soundEngine.playHit();
+                        g.particles.push(new Particle(e.x + e.width/2, e.y + e.height/2, '#fff'));
+
+                        if (e.hp <= 0) {
+                            let dropChance = 0.05; 
+                            if (e.type === 'ELITE' || e.type === 'HEAVY') dropChance = 0.5;
+                            else if (e.type === 'BOSS') dropChance = 1.0;
+
+                            if (Math.random() < dropChance) {
+                                const r = Math.random();
+                                let type: 'HEALTH' | 'ENERGY' | 'BOOST' | 'SHIELD';
+                                if (r < 0.3) type = 'HEALTH';
+                                else if (r < 0.6) type = 'ENERGY';
+                                else if (r < 0.85) type = 'BOOST';
+                                else type = 'SHIELD';
+                                
+                                g.items.push(new Item(e.x + e.width/2, e.y, type));
+                            }
+
+                            g.enemies.splice(i, 1);
+                            setScore(s => s + (e.type === 'BOSS' ? 5000 : (e.type === 'ELITE' ? 300 : 100)));
+                            soundEngine.playExplosion();
+                            
+                            if (e.type === 'BOSS') {
+                                g.boss = null; 
+                                setBossHp(prev => ({...prev, current: 0}));
+                                setBossDefeatedCount(prev => prev + 1);
+                                soundEngine.playBossDeath();
+                                startBossTimer(15); 
+                            }
+                        } else {
+                            if (e.type === 'BOSS') setBossHp(prev => ({...prev, current: e.hp}));
+                        }
+                    }
+                 }
+              }
+            }
+
+            for (let i = g.particles.length - 1; i >= 0; i--) {
+              const part = g.particles[i];
+              part.update();
+              part.draw(ctx, g.cameraX);
+              if (part.life <= 0) g.particles.splice(i, 1);
+            }
+
+            p.draw(ctx, g.cameraX);
+            ctx.restore();
+
+            if (!g.boss && bossTimer > 0) {
+                 ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                 ctx.fillRect(0, 80, CANVAS_WIDTH, 50);
+                 ctx.fillStyle = '#ff0055';
+                 ctx.font = "bold 24px 'Noto Sans TC'";
+                 ctx.textAlign = 'center';
+                 ctx.fillText(`警報: 強敵將於 ${bossTimer} 秒後降臨`, CANVAS_WIDTH/2, 115);
+            }
+
+            if (g.boss) {
+                const barW = Math.min(500, CANVAS_WIDTH - 40);
+                const barX = (CANVAS_WIDTH - barW) / 2;
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(barX, 50, barW, 25);
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(barX, 50, barW * (bossHp.current / bossHp.max), 25);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(barX, 50, barW, 25);
+                ctx.fillStyle = '#fff';
+                ctx.font = "bold 18px 'Noto Sans TC'";
+                ctx.textAlign = 'center';
+                ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
+            }
+      }
       }
       animationId = requestAnimationFrame(render);
     };
 
-    render();
+    animationId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationId);
   }, [gameState, bossHp, bossTimer]);
 
@@ -2488,7 +2522,7 @@ const CyberpunkGame = () => {
                               <span>量子毀滅砲 (大範圍爆炸傷害)</span>
                           </div>
                           <div className="flex items-center gap-3 col-span-2">
-                              <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-xs">L-CLICK / K</div>
+                              <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center text-xs font-bold shadow-[0_0_5px_#3b82f6]">L-CLICK / K</div>
                               <span>貓爪攻擊 (回復能量)</span>
                           </div>
                       </div>
@@ -2508,7 +2542,7 @@ const CyberpunkGame = () => {
                           </div>
                           <div className="flex items-center gap-3">
                               <div className="w-8 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"></div>
-                              <span className="text-sm">神經加速 (攻速 + 跑速大幅提升 / 體力無上限)</span>
+                              <span className="text-sm">沙德威斯坦 (攻速 + 跑速大幅提升 / 體力無上限)</span>
                           </div>
                           <div className="flex items-center gap-3">
                               <div className="w-6 h-6 border-2 border-blue-500 text-blue-500 flex items-center justify-center text-xs font-bold rounded-full shadow-[0_0_5px_#3b82f6]">S</div>
@@ -2557,7 +2591,7 @@ const CyberpunkGame = () => {
 
               <button 
                   onClick={gameRef.current.isGameActive ? resumeGame : startGame}
-                  className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse"
+                  className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(255,0,0,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(255,0,0,0.6)] transition-all z-20 font-arcade animate-pulse"
               >
                   {gameRef.current.isGameActive ? "恢復連線 (RESUME)" : "開始連結 (START LINK)"}
               </button>
