@@ -2676,7 +2676,7 @@ const CyberpunkGame = () => {
                         <div className="flex flex-col gap-6 mt-6">
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
-                                    <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">BOSS擊殺數 (WAVES)</span>
+                                    <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">擊殺BOSS (WAVES)</span>
                                     <span className="text-5xl font-bold text-cyan-400 font-arcade mt-2">{bossDefeatedCount}</span>
                                 </div>
                                 <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
