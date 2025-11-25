@@ -2588,7 +2588,7 @@ const CyberpunkGame = () => {
                                     <span>量子毀滅砲 (大範圍爆炸傷害)</span>
                                 </div>
                                 <div className="flex items-center gap-3 col-span-2">
-                                    <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-xs">L-CLICK / K</div>
+                                    <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-xs">左鍵 / K</div>
                                     <span>貓爪攻擊 (回復能量)</span>
                                 </div>
                             </div>
@@ -2608,7 +2608,7 @@ const CyberpunkGame = () => {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"></div>
-                                    <span className="text-sm">神經加速 (攻速 + 跑速大幅提升 / 體力無上限)</span>
+                                    <span className="text-sm">沙德威斯坦 (攻速和跑速大幅提升)</span>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="w-6 h-6 border-2 border-blue-500 text-blue-500 flex items-center justify-center text-xs font-bold rounded-full shadow-[0_0_5px_#3b82f6]">S</div>
