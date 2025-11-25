@@ -2659,7 +2659,7 @@ const CyberpunkGame = () => {
                         onClick={gameRef.current.isGameActive ? resumeGame : startGame}
                         className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse"
                     >
-                        {gameRef.current.isGameActive ? "返回戰鬥" : " Let's Go ^•⩊•^ฅ "}
+                        {gameRef.current.isGameActive ? "返回戰鬥" : " Let's Go! "}
                     </button>
                 </div>
             )}
