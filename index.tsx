@@ -833,7 +833,7 @@ class Projectile {
     vx: number;
     vy: number;
     color = COLORS.projectile;
-    life = 120;
+    life = 600; // Increased from 120 to allow unlimited range (10 seconds at 60fps)
     isPlayer = false;
     isUltimate = false;
     hasExploded = false;
@@ -1458,11 +1458,16 @@ class Enemy {
                         }
                     }
                 } else {
-                    // Mode 2: Ground shockwave pattern
+                    // Mode 2: Ground shockwave pattern - aim towards player
                     if (this.attackTimer % attackCooldown === 0) {
                         soundEngine.playShoot();
+                        // Calculate angle to player for proper aiming
+                        const angleToPlayer = Math.atan2(target.y - this.y, target.x - this.x);
                         for (let dir of [-1, 1]) {
-                            const p = new Projectile(this.x + this.width / 2, this.y + this.height, dir * 2.5, 0); // Reduced speed
+                            // Use angle-based velocity instead of pure horizontal
+                            const angle = angleToPlayer + (dir * 0.3); // Spread slightly left and right
+                            const speed = 2.5;
+                            const p = new Projectile(this.x + this.width / 2, this.y + this.height, Math.cos(angle) * speed, Math.sin(angle) * speed);
                             p.width = 60; p.height = 40;
                             projectiles.push(p);
                         }
