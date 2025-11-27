@@ -270,7 +270,7 @@ npm install
 npm run dev
 
 # 4. 打開瀏覽器訪問
-# 通常是 http://localhost:5173
+# 通常是 http://localhost:3000
 ```
 
 ### 構建生產版本
