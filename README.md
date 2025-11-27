@@ -547,7 +547,7 @@ SOFTWARE.
 如有任何問題或建議，歡迎通過以下方式聯繫：
 
 - **GitHub Issues**: [提交問題](https://github.com/AweiLu/--------/issues)
-- **Email**: [your-email@example.com]
+- **Email**: [b2004931124@gmail.com]
 
 ---
 
@@ -555,8 +555,8 @@ SOFTWARE.
 
 **🎮 享受遊戲，挑戰極限！**
 
+開發於2025/11/24
+Made with ❤️ by 陳政緯 
+
 *在賽博世界中書寫屬於你的傳奇*
-
-Made with ❤️ by AweiLu
-
 </div>
