@@ -2691,122 +2691,131 @@ const CyberpunkGame = () => {
 
             {/* INSTRUCTION PAGE */}
             {gameState === 'INSTRUCTIONS' && (
-                <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md overflow-hidden text-white p-8">
+                <div className="absolute inset-0 z-[60] flex flex-col bg-black/90 backdrop-blur-md text-white">
                     {/* Grid BG */}
                     <div className="absolute inset-0 pointer-events-none opacity-10 border-2 border-cyan-500/30 m-4 rounded-3xl"
                         style={{ backgroundImage: 'radial-gradient(#00f3ff 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
                     </div>
 
-                    {/* Header */}
-                    <div className="absolute top-8 left-8 z-10 cursor-pointer group" onClick={returnToMenu}>
-                        <div className="w-12 h-12 border-2 border-cyan-500 rounded-lg flex items-center justify-center group-hover:bg-cyan-500/20 transition-all">
-                            <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-cyan-400 mb-1"></div>
-                        </div>
-                        <div className="text-xs text-cyan-500 text-center mt-1 font-bold">HOME</div>
-                    </div>
+                    {/* Scrollable Container */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full relative">
+                        <div className="min-h-full flex flex-col items-center p-4 md:p-8 pb-20">
 
-                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 mb-8 drop-shadow-[0_0_10px_rgba(0,243,255,0.5)] font-zh tracking-widest">
-                        「 遊戲操作說明 」
-                    </h2>
-
-                    <div className="grid grid-cols-2 gap-8 w-full max-w-6xl z-10">
-                        {/* Controls */}
-                        <div className="bg-gray-900/80 border border-cyan-500/50 rounded-xl p-6 relative overflow-hidden group hover:border-cyan-400 transition-colors">
-                            <h3 className="text-xl font-bold text-cyan-400 mb-4 border-b border-cyan-500/30 pb-2">操作手則</h3>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex gap-1">
-                                        <div className="w-8 h-8 border border-white rounded flex items-center justify-center font-bold">A</div>
-                                        <div className="w-8 h-8 border border-white rounded flex items-center justify-center font-bold">D</div>
+                            {/* Header Section with Home Button */}
+                            <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between mb-8 relative z-10">
+                                <div className="cursor-pointer group flex flex-col items-center self-start md:self-center mb-4 md:mb-0" onClick={returnToMenu}>
+                                    <div className="w-10 h-10 md:w-12 md:h-12 border-2 border-cyan-500 rounded-lg flex items-center justify-center group-hover:bg-cyan-500/20 transition-all">
+                                        <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[10px] border-b-cyan-400 mb-1 md:border-l-[8px] md:border-r-[8px] md:border-b-[12px]"></div>
                                     </div>
-                                    <span>左右移動</span>
+                                    <div className="text-xs text-cyan-500 text-center mt-1 font-bold">HOME</div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-16 h-8 border border-white rounded flex items-center justify-center font-bold text-xs">SPACE</div>
-                                    <span>跳躍 / 二段跳(消耗體力)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-16 h-8 border border-pink-400 text-pink-400 rounded flex items-center justify-center font-bold text-xs">SHIFT</div>
-                                    <span>閃避 (短暫無敵 消耗體力)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 border border-yellow-400 text-yellow-400 rounded flex items-center justify-center font-bold">R</div>
-                                    <span>量子毀滅砲 (大範圍爆炸傷害)</span>
-                                </div>
-                                <div className="flex items-center gap-3 col-span-2">
-                                    <div className="w-24 h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-xs">左鍵 / K</div>
-                                    <span>貓爪攻擊 (回復能量)</span>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Items */}
-                        <div className="bg-gray-900/80 border border-green-500/50 rounded-xl p-6 relative overflow-hidden group hover:border-green-400 transition-colors">
-                            <h3 className="text-xl font-bold text-green-400 mb-4 border-b border-green-500/30 pb-2">道具一覽</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-6 h-6 bg-green-500 shadow-[0_0_10px_#22c55e] flex items-center justify-center text-black font-bold text-xs">+</div>
-                                    <span className="text-sm">醫療包 (回復生命值)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-6 h-6 bg-yellow-500 shadow-[0_0_10px_#eab308] clip-path-polygon-[50%_0,100%_50%,50%_100%,0_50%]"></div>
-                                    <span className="text-sm">能量電池 (回負能量 + 體力)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"></div>
-                                    <span className="text-sm">沙德威斯坦 (攻速和跑速大幅提升)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-6 h-6 border-2 border-blue-500 text-blue-500 flex items-center justify-center text-xs font-bold rounded-full shadow-[0_0_5px_#3b82f6]">S</div>
-                                    <span className="text-sm">量子護盾 (抵免一次傷害)</span>
-                                </div>
+                                <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-[0_0_10px_rgba(0,243,255,0.5)] font-zh tracking-widest text-center absolute left-0 right-0 pointer-events-none md:static">
+                                    「 遊戲操作說明 」
+                                </h2>
+                                <div className="w-12 hidden md:block"></div> {/* Spacer for centering */}
                             </div>
-                        </div>
 
-                        {/* Status */}
-                        <div className="bg-gray-900/80 border border-pink-500/50 rounded-xl p-6 relative overflow-hidden group hover:border-pink-400 transition-colors">
-                            <h3 className="text-xl font-bold text-pink-400 mb-4 border-b border-pink-500/30 pb-2">數值狀態</h3>
-                            <div className="space-y-3 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-20 h-2 bg-gray-700 rounded"><div className="w-3/4 h-full bg-cyan-400"></div></div>
-                                    <span>生命值(注意血量!)</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-20 h-2 bg-gray-700 rounded"><div className="w-1/2 h-full bg-yellow-400"></div></div>
-                                    <span>能量 (攻擊後能夠充能)</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-20 h-2 bg-gray-700 rounded"><div className="w-full h-full bg-pink-400"></div></div>
-                                    <span>體力 (閃避/二段跳將會消耗)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Environment */}
-                        <div className="bg-gray-900/80 border border-red-500/50 rounded-xl p-6 relative overflow-hidden group hover:border-red-400 transition-colors">
-                            <h3 className="text-xl font-bold text-red-400 mb-4 border-b border-red-500/30 pb-2">地圖物件</h3>
-                            <div className="space-y-4 text-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-2 bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-                                    <span>重力彈簧 (能夠彈跳 + 回復些許體力)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex gap-1">
-                                        <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-500"></div>
-                                        <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-500"></div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 w-full max-w-6xl z-10">
+                                {/* Controls */}
+                                <div className="bg-gray-900/80 border border-cyan-500/50 rounded-xl p-4 md:p-6 relative overflow-hidden group hover:border-cyan-400 transition-colors">
+                                    <h3 className="text-lg md:text-xl font-bold text-cyan-400 mb-4 border-b border-cyan-500/30 pb-2">操作手則</h3>
+                                    <div className="grid grid-cols-2 gap-3 md:gap-4 text-sm">
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <div className="flex gap-1">
+                                                <div className="w-7 h-7 md:w-8 md:h-8 border border-white rounded flex items-center justify-center font-bold text-xs md:text-base">A</div>
+                                                <div className="w-7 h-7 md:w-8 md:h-8 border border-white rounded flex items-center justify-center font-bold text-xs md:text-base">D</div>
+                                            </div>
+                                            <span className="text-xs md:text-sm">左右移動</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <div className="w-14 h-7 md:w-16 md:h-8 border border-white rounded flex items-center justify-center font-bold text-[10px] md:text-xs">SPACE</div>
+                                            <span className="text-xs md:text-sm">跳躍 / 二段跳</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <div className="w-14 h-7 md:w-16 md:h-8 border border-pink-400 text-pink-400 rounded flex items-center justify-center font-bold text-[10px] md:text-xs">SHIFT</div>
+                                            <span className="text-xs md:text-sm">閃避 (無敵)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <div className="w-7 h-7 md:w-8 md:h-8 border border-yellow-400 text-yellow-400 rounded flex items-center justify-center font-bold text-xs md:text-base">R</div>
+                                            <span className="text-xs md:text-sm">量子毀滅砲</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:gap-3 col-span-2">
+                                            <div className="w-20 h-7 md:w-24 md:h-8 border border-red-400 text-red-400 rounded flex items-center justify-center font-bold text-[10px] md:text-xs">左鍵 / K</div>
+                                            <span className="text-xs md:text-sm">貓爪攻擊 (回能)</span>
+                                        </div>
                                     </div>
-                                    <span>尖尖地刺 (觸碰會被刺傷)</span>
+                                </div>
+
+                                {/* Items */}
+                                <div className="bg-gray-900/80 border border-green-500/50 rounded-xl p-4 md:p-6 relative overflow-hidden group hover:border-green-400 transition-colors">
+                                    <h3 className="text-lg md:text-xl font-bold text-green-400 mb-4 border-b border-green-500/30 pb-2">道具一覽</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-6 h-6 bg-green-500 shadow-[0_0_10px_#22c55e] flex items-center justify-center text-black font-bold text-xs flex-shrink-0">+</div>
+                                            <span className="text-xs md:text-sm">醫療包 (回血)</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-6 h-6 bg-yellow-500 shadow-[0_0_10px_#eab308] clip-path-polygon-[50%_0,100%_50%,50%_100%,0_50%] flex-shrink-0"></div>
+                                            <span className="text-xs md:text-sm">能量電池 (回能+體)</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7] flex-shrink-0"></div>
+                                            <span className="text-xs md:text-sm">沙德威斯坦 (加速)</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-6 h-6 border-2 border-blue-500 text-blue-500 flex items-center justify-center text-xs font-bold rounded-full shadow-[0_0_5px_#3b82f6] flex-shrink-0">S</div>
+                                            <span className="text-xs md:text-sm">量子護盾 (抵傷)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Status */}
+                                <div className="bg-gray-900/80 border border-pink-500/50 rounded-xl p-4 md:p-6 relative overflow-hidden group hover:border-pink-400 transition-colors">
+                                    <h3 className="text-lg md:text-xl font-bold text-pink-400 mb-4 border-b border-pink-500/30 pb-2">數值狀態</h3>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 md:w-20 h-2 bg-gray-700 rounded flex-shrink-0"><div className="w-3/4 h-full bg-cyan-400"></div></div>
+                                            <span className="text-xs md:text-sm">生命值 (注意血量!)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 md:w-20 h-2 bg-gray-700 rounded flex-shrink-0"><div className="w-1/2 h-full bg-yellow-400"></div></div>
+                                            <span className="text-xs md:text-sm">能量 (攻擊充能)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 md:w-20 h-2 bg-gray-700 rounded flex-shrink-0"><div className="w-full h-full bg-pink-400"></div></div>
+                                            <span className="text-xs md:text-sm">體力 (閃避/跳躍消耗)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Environment */}
+                                <div className="bg-gray-900/80 border border-red-500/50 rounded-xl p-4 md:p-6 relative overflow-hidden group hover:border-red-400 transition-colors">
+                                    <h3 className="text-lg md:text-xl font-bold text-red-400 mb-4 border-b border-red-500/30 pb-2">地圖物件</h3>
+                                    <div className="space-y-4 text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-2 bg-green-500 shadow-[0_0_10px_#22c55e] flex-shrink-0"></div>
+                                            <span className="text-xs md:text-sm">重力彈簧 (彈跳+回體)</span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex gap-1 flex-shrink-0">
+                                                <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-500"></div>
+                                                <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[10px] border-b-red-500"></div>
+                                            </div>
+                                            <span className="text-xs md:text-sm">尖尖地刺 (受傷)</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <button
+                                onClick={gameRef.current.isGameActive ? resumeGame : startGame}
+                                className="mt-8 px-12 md:px-16 py-3 md:py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-xl md:text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse mb-8"
+                            >
+                                {gameRef.current.isGameActive ? "返回戰鬥" : " Let's Go! "}
+                            </button>
                         </div>
                     </div>
-
-                    <button
-                        onClick={gameRef.current.isGameActive ? resumeGame : startGame}
-                        className="mt-8 px-16 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-2xl tracking-widest rounded-full shadow-[0_0_30px_rgba(0,243,255,0.4)] hover:scale-105 hover:shadow-[0_0_50px_rgba(0,243,255,0.6)] transition-all z-20 font-arcade animate-pulse"
-                    >
-                        {gameRef.current.isGameActive ? "返回戰鬥" : " Let's Go! "}
-                    </button>
                 </div>
             )}
 
