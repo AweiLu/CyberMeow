@@ -2605,7 +2605,10 @@ const CyberpunkGame = () => {
             <div className="scanlines"></div>
 
             {/* HUD Layer */}
-            <div className={`absolute top-2 left-2 md:top-5 md:left-5 z-10 pointer-events-none scale-[0.2] md:scale-110 origin-top-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div
+                className={`absolute top-2 left-2 md:top-5 md:left-5 z-10 pointer-events-none origin-top-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}
+                style={{ transform: isMobile ? 'scale(0.6)' : 'scale(1.1)' }}
+            >
                 <div className="text-white font-bold text-2xl mb-1 drop-shadow-md font-zh">分數: {score}</div>
 
                 <div className="flex items-center mb-2">
@@ -2627,7 +2630,10 @@ const CyberpunkGame = () => {
             </div>
 
             {/* Stamina Bar - Paw Theme */}
-            <div className={`absolute top-32 left-2 md:top-48 md:left-8 z-10 pointer-events-none flex flex-col items-center gap-1 scale-[0.2] md:scale-110 origin-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div
+                className={`absolute top-32 left-2 md:top-48 md:left-8 z-10 pointer-events-none flex flex-col items-center gap-1 origin-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}
+                style={{ transform: isMobile ? 'scale(0.6)' : 'scale(1.1)' }}
+            >
                 <div className="w-6 h-40 bg-gray-900 border border-pink-400 rounded-full relative overflow-hidden">
                     <div ref={staminaBarRef} className="absolute bottom-0 left-0 w-full bg-pink-400 transition-all duration-100 ease-linear" style={{ height: '100%' }}></div>
                 </div>
@@ -2642,7 +2648,10 @@ const CyberpunkGame = () => {
             </div>
 
             {/* Right HUD */}
-            <div className={`absolute top-2 right-2 md:top-5 md:right-5 text-right z-10 scale-[0.2] md:scale-110 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div
+                className={`absolute top-2 right-2 md:top-5 md:right-5 text-right z-10 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}
+                style={{ transform: isMobile ? 'scale(0.6)' : 'scale(1.1)' }}
+            >
                 <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">BOSS擊殺</h2>
                 <p className="text-6xl text-red-500 font-bold drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">{bossDefeatedCount}</p>
                 <h2 className="text-lg font-bold text-gray-400 font-arcade mt-2">生存時間</h2>
@@ -2700,7 +2709,7 @@ const CyberpunkGame = () => {
 
                     {/* Scrollable Container */}
                     <div className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full relative">
-                        <div className="min-h-full flex flex-col items-center p-4 md:p-8 pb-20">
+                        <div className={`min-h-full flex flex-col items-center p-4 md:p-8 pb-24 ${isMobile ? 'scale-90 origin-top' : ''}`}>
 
                             {/* Header Section with Home Button */}
                             <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between mb-8 relative z-10">
