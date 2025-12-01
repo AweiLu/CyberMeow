@@ -2577,17 +2577,18 @@ const CyberpunkGame = () => {
                 }
 
                 if (g.boss) {
-                    const barW = Math.min(500, CANVAS_WIDTH - 40);
+                    const scale = isMobile ? 0.5 : 1;
+                    const barW = Math.min(500, CANVAS_WIDTH - 40) * scale;
                     const barX = (CANVAS_WIDTH - barW) / 2;
                     ctx.fillStyle = 'rgba(0,0,0,0.8)';
-                    ctx.fillRect(barX, 50, barW, 25);
+                    ctx.fillRect(barX, 50, barW, 25 * scale);
                     ctx.fillStyle = '#ff0000';
-                    ctx.fillRect(barX, 50, barW * (bossHp.current / bossHp.max), 25);
+                    ctx.fillRect(barX, 50, barW * (bossHp.current / bossHp.max), 25 * scale);
                     ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(barX, 50, barW, 25);
+                    ctx.lineWidth = 2 * scale;
+                    ctx.strokeRect(barX, 50, barW, 25 * scale);
                     ctx.fillStyle = '#fff';
-                    ctx.font = "bold 18px 'Noto Sans TC'";
+                    ctx.font = `bold ${18 * scale}px 'Noto Sans TC'`;
                     ctx.textAlign = 'center';
                     ctx.fillText(bossHp.name, CANVAS_WIDTH / 2, 40);
                 }
@@ -2597,14 +2598,14 @@ const CyberpunkGame = () => {
 
         render();
         return () => cancelAnimationFrame(animationId);
-    }, [gameState, bossHp, bossTimer]);
+    }, [gameState, bossHp, bossTimer, isMobile]);
 
     return (
         <div className="relative w-screen h-screen flex justify-center items-center font-zh bg-neutral-900 overflow-hidden select-none">
             <div className="scanlines"></div>
 
             {/* HUD Layer */}
-            <div className={`absolute top-5 left-5 z-10 pointer-events-none scale-110 origin-top-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute top-2 left-2 md:top-5 md:left-5 z-10 pointer-events-none scale-[0.2] md:scale-110 origin-top-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="text-white font-bold text-2xl mb-1 drop-shadow-md font-zh">分數: {score}</div>
 
                 <div className="flex items-center mb-2">
@@ -2626,7 +2627,7 @@ const CyberpunkGame = () => {
             </div>
 
             {/* Stamina Bar - Paw Theme */}
-            <div className={`absolute top-48 left-8 z-10 pointer-events-none flex flex-col items-center gap-1 scale-110 origin-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute top-32 left-2 md:top-48 md:left-8 z-10 pointer-events-none flex flex-col items-center gap-1 scale-[0.2] md:scale-110 origin-left transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="w-6 h-40 bg-gray-900 border border-pink-400 rounded-full relative overflow-hidden">
                     <div ref={staminaBarRef} className="absolute bottom-0 left-0 w-full bg-pink-400 transition-all duration-100 ease-linear" style={{ height: '100%' }}></div>
                 </div>
@@ -2641,7 +2642,7 @@ const CyberpunkGame = () => {
             </div>
 
             {/* Right HUD */}
-            <div className={`absolute top-5 right-5 text-right z-10 scale-110 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute top-2 right-2 md:top-5 md:right-5 text-right z-10 scale-[0.2] md:scale-110 origin-top-right transition-opacity duration-500 ${gameState === 'PLAYING' ? 'opacity-100' : 'opacity-0'}`}>
                 <h2 className="text-2xl font-bold text-white font-arcade drop-shadow-md">BOSS擊殺</h2>
                 <p className="text-6xl text-red-500 font-bold drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]">{bossDefeatedCount}</p>
                 <h2 className="text-lg font-bold text-gray-400 font-arcade mt-2">生存時間</h2>
@@ -2878,62 +2879,62 @@ const CyberpunkGame = () => {
             {isMobile && gameState === 'PLAYING' && (
                 <>
                     {/* Left Controls: Movement */}
-                    <div className="absolute bottom-8 left-8 flex gap-4 z-50">
+                    <div className="absolute bottom-4 left-4 flex gap-3 z-50">
                         <button
-                            className="w-20 h-20 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
+                            className="w-16 h-16 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
                             onTouchStart={(e) => { e.preventDefault(); gameRef.current.keys['ArrowLeft'] = true; }}
                             onTouchEnd={(e) => { e.preventDefault(); gameRef.current.keys['ArrowLeft'] = false; }}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-8 h-8">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                             </svg>
                         </button>
                         <button
-                            className="w-20 h-20 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
+                            className="w-16 h-16 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
                             onTouchStart={(e) => { e.preventDefault(); gameRef.current.keys['ArrowRight'] = true; }}
                             onTouchEnd={(e) => { e.preventDefault(); gameRef.current.keys['ArrowRight'] = false; }}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-8 h-8">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </button>
                     </div>
 
                     {/* Right Controls: Actions */}
-                    <div className="absolute bottom-8 right-8 grid grid-cols-3 gap-4 z-50">
+                    <div className="absolute bottom-4 right-4 grid grid-cols-3 gap-3 z-50">
                         {/* Row 1 */}
                         <div className="col-start-2">
                             <button
-                                className="w-16 h-16 bg-yellow-500/30 rounded-full border-2 border-yellow-400 active:bg-yellow-500/60 flex items-center justify-center backdrop-blur-sm"
+                                className="w-14 h-14 bg-yellow-500/30 rounded-full border-2 border-yellow-400 active:bg-yellow-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerUltimate(); }}
                             >
-                                <span className="text-white font-bold text-base font-zh drop-shadow-md">大招</span>
+                                <span className="text-white font-bold text-sm font-zh drop-shadow-md">大招</span>
                             </button>
                         </div>
 
                         {/* Row 2 */}
                         <div className="col-start-1">
                             <button
-                                className="w-16 h-16 bg-red-500/30 rounded-full border-2 border-red-400 active:bg-red-500/60 flex items-center justify-center backdrop-blur-sm"
+                                className="w-14 h-14 bg-red-500/30 rounded-full border-2 border-red-400 active:bg-red-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerAttack(); }}
                             >
-                                <span className="text-white font-bold text-base font-zh drop-shadow-md">爪擊</span>
+                                <span className="text-white font-bold text-sm font-zh drop-shadow-md">爪擊</span>
                             </button>
                         </div>
                         <div className="col-start-2">
                             <button
-                                className="w-20 h-20 bg-blue-500/30 rounded-full border-2 border-blue-400 active:bg-blue-500/60 flex items-center justify-center backdrop-blur-sm"
+                                className="w-16 h-16 bg-blue-500/30 rounded-full border-2 border-blue-400 active:bg-blue-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerJump(); }}
                             >
-                                <span className="text-white font-bold text-xl font-zh drop-shadow-md">跳</span>
+                                <span className="text-white font-bold text-lg font-zh drop-shadow-md">跳</span>
                             </button>
                         </div>
                         <div className="col-start-3">
                             <button
-                                className="w-16 h-16 bg-green-500/30 rounded-full border-2 border-green-400 active:bg-green-500/60 flex items-center justify-center backdrop-blur-sm"
+                                className="w-14 h-14 bg-green-500/30 rounded-full border-2 border-green-400 active:bg-green-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerDodge(); }}
                             >
-                                <span className="text-white font-bold text-base font-zh drop-shadow-md">閃避</span>
+                                <span className="text-white font-bold text-sm font-zh drop-shadow-md">閃避</span>
                             </button>
                         </div>
                     </div>
