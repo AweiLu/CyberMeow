@@ -1749,6 +1749,7 @@ const CyberpunkGame = () => {
     const [bossHp, setBossHp] = useState({ current: 0, max: 100, name: "" });
     const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
     const [survivalTime, setSurvivalTime] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
 
     const entityIdCounter = useRef(0);
     const lastBossType = useRef<BossType | null>(null);
@@ -1780,7 +1781,11 @@ const CyberpunkGame = () => {
         lastFrameTime: 0, // For deltaTime calculation
         deltaTime: 0, // Time between frames in seconds
         difficultyLevel: 0, // New difficulty system: 0-5
-        lastDifficultyIncTime: 0 // Track when difficulty was last increased
+        lastDifficultyIncTime: 0, // Track when difficulty was last increased
+        triggerJump: () => { },
+        triggerAttack: () => { },
+        triggerDodge: () => { },
+        triggerUltimate: () => { }
     });
 
     useEffect(() => {
@@ -1796,6 +1801,12 @@ const CyberpunkGame = () => {
         window.addEventListener('resize', handleResize);
 
         initLevel();
+
+        // Mobile Detection
+        const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+        if (/android|ipad|iphone|ipod/i.test(userAgent)) {
+            setIsMobile(true);
+        }
 
         if (gameState === 'MENU') {
             // Initialize audio and attempt to start BGM
@@ -2030,66 +2041,15 @@ const CyberpunkGame = () => {
                 if (e.code === 'KeyZ' || e.code === 'KeyK') triggerAttack();
 
                 if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
-                    if (g.player.dodgeCooldown === 0) {
-                        // Check Stamina
-                        if (g.player.stamina >= STAMINA_COST_DODGE || g.player.buffTimer > 0) {
-                            if (g.player.buffTimer <= 0) g.player.stamina -= STAMINA_COST_DODGE;
-
-                            g.player.dodgeCooldown = 210; // 3.5 seconds at 60fps
-                            g.player.invincibleTimer = 90; // 1.5 seconds at 60fps (dodge invincibility)
-                            // Give speed buff: 2x speed for 0.5 seconds
-                            g.player.dodgeSpeedTimer = 30; // 0.5 second speed boost at 60fps
-                            soundEngine.playDodge();
-                        } else {
-                            soundEngine.playNoStamina();
-                        }
-                    }
+                    triggerDodge();
                 }
 
                 if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') {
-                    // Jump Logic including Double Jump
-                    if (g.player.isGrounded) {
-                        g.player.vy = JUMP_FORCE_DEFAULT;
-                        g.player.isGrounded = false;
-                        g.player.jumpCount = 1;
-                        soundEngine.playJump();
-                        for (let i = 0; i < 5; i++) g.particles.push(new Particle(g.player.x + 16, g.player.y + 30, '#fff'));
-                    } else if (g.player.jumpCount < 2) {
-                        // Double Jump Check
-                        if (g.player.stamina >= STAMINA_COST_DOUBLE_JUMP || g.player.buffTimer > 0) {
-                            if (g.player.buffTimer <= 0) g.player.stamina -= STAMINA_COST_DOUBLE_JUMP;
-                            g.player.vy = JUMP_FORCE_DEFAULT * 0.9; // Slightly weaker 2nd jump
-                            g.player.jumpCount = 2;
-                            soundEngine.playDoubleJump();
-                            // Pink particles for double jump
-                            for (let i = 0; i < 8; i++) g.particles.push(new Particle(g.player.x + 16, g.player.y + 30, COLORS.stamina, 1.2));
-                        } else {
-                            soundEngine.playNoStamina();
-                        }
-                    }
+                    triggerJump();
                 }
 
                 if (e.code === 'KeyR') {
-                    if (g.player.energy >= 99) {
-                        g.player.energy = 0;
-                        if (energyBarRef.current) energyBarRef.current.style.width = '0%';
-                        if (energyTextRef.current) energyTextRef.current.style.display = 'none';
-
-                        g.screenShake = 20;
-                        g.glitchIntensity = 0.5;
-                        soundEngine.playUltimateShoot();
-
-                        const dir = g.player.facingRight ? 1 : -1;
-                        const projectile = new Projectile(
-                            g.player.x + (dir * 30),
-                            g.player.y + 10,
-                            dir * 12.5, // Reduced to 50%
-                            0,
-                            true,
-                            true
-                        );
-                        g.projectiles.push(projectile);
-                    }
+                    triggerUltimate();
                 }
             }
         };
@@ -2122,7 +2082,73 @@ const CyberpunkGame = () => {
                     g.player.facingRight
                 ));
             }
-        }
+        };
+
+        const triggerJump = () => {
+            const g = gameRef.current;
+            if (g.player.isGrounded) {
+                g.player.vy = JUMP_FORCE_DEFAULT;
+                g.player.isGrounded = false;
+                g.player.jumpCount = 1;
+                soundEngine.playJump();
+                for (let i = 0; i < 5; i++) g.particles.push(new Particle(g.player.x + 16, g.player.y + 30, '#fff'));
+            } else if (g.player.jumpCount < 2) {
+                if (g.player.stamina >= STAMINA_COST_DOUBLE_JUMP || g.player.buffTimer > 0) {
+                    if (g.player.buffTimer <= 0) g.player.stamina -= STAMINA_COST_DOUBLE_JUMP;
+                    g.player.vy = JUMP_FORCE_DEFAULT * 0.9;
+                    g.player.jumpCount = 2;
+                    soundEngine.playDoubleJump();
+                    for (let i = 0; i < 8; i++) g.particles.push(new Particle(g.player.x + 16, g.player.y + 30, COLORS.stamina, 1.2));
+                } else {
+                    soundEngine.playNoStamina();
+                }
+            }
+        };
+
+        const triggerDodge = () => {
+            const g = gameRef.current;
+            if (g.player.dodgeCooldown === 0) {
+                if (g.player.stamina >= STAMINA_COST_DODGE || g.player.buffTimer > 0) {
+                    if (g.player.buffTimer <= 0) g.player.stamina -= STAMINA_COST_DODGE;
+                    g.player.dodgeCooldown = 210;
+                    g.player.invincibleTimer = 90;
+                    g.player.dodgeSpeedTimer = 30;
+                    soundEngine.playDodge();
+                } else {
+                    soundEngine.playNoStamina();
+                }
+            }
+        };
+
+        const triggerUltimate = () => {
+            const g = gameRef.current;
+            if (g.player.energy >= 99) {
+                g.player.energy = 0;
+                if (energyBarRef.current) energyBarRef.current.style.width = '0%';
+                if (energyTextRef.current) energyTextRef.current.style.display = 'none';
+
+                g.screenShake = 20;
+                g.glitchIntensity = 0.5;
+                soundEngine.playUltimateShoot();
+
+                const dir = g.player.facingRight ? 1 : -1;
+                const projectile = new Projectile(
+                    g.player.x + (dir * 30),
+                    g.player.y + 10,
+                    dir * 12.5,
+                    0,
+                    true,
+                    true
+                );
+                g.projectiles.push(projectile);
+            }
+        };
+
+        // Expose triggers to ref for touch controls
+        (gameRef.current as any).triggerJump = triggerJump;
+        (gameRef.current as any).triggerAttack = triggerAttack;
+        (gameRef.current as any).triggerDodge = triggerDodge;
+        (gameRef.current as any).triggerUltimate = triggerUltimate;
 
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
@@ -2832,6 +2858,76 @@ const CyberpunkGame = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Mobile Touch Controls */}
+            {isMobile && gameState === 'PLAYING' && (
+                <>
+                    {/* Left Controls: Movement */}
+                    <div className="absolute bottom-8 left-8 flex gap-4 z-50">
+                        <button
+                            className="w-20 h-20 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
+                            onTouchStart={(e) => { e.preventDefault(); gameRef.current.keys['ArrowLeft'] = true; }}
+                            onTouchEnd={(e) => { e.preventDefault(); gameRef.current.keys['ArrowLeft'] = false; }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <button
+                            className="w-20 h-20 bg-white/20 rounded-full border-2 border-white/50 active:bg-white/40 flex items-center justify-center backdrop-blur-sm"
+                            onTouchStart={(e) => { e.preventDefault(); gameRef.current.keys['ArrowRight'] = true; }}
+                            onTouchEnd={(e) => { e.preventDefault(); gameRef.current.keys['ArrowRight'] = false; }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Right Controls: Actions */}
+                    <div className="absolute bottom-8 right-8 grid grid-cols-3 gap-4 z-50">
+                        {/* Row 1 */}
+                        <div className="col-start-2">
+                            <button
+                                className="w-16 h-16 bg-yellow-500/30 rounded-full border-2 border-yellow-400 active:bg-yellow-500/60 flex items-center justify-center backdrop-blur-sm"
+                                onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerUltimate(); }}
+                            >
+                                <span className="text-white font-bold text-xs">ULT</span>
+                            </button>
+                        </div>
+
+                        {/* Row 2 */}
+                        <div className="col-start-1">
+                            <button
+                                className="w-16 h-16 bg-red-500/30 rounded-full border-2 border-red-400 active:bg-red-500/60 flex items-center justify-center backdrop-blur-sm"
+                                onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerAttack(); }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-8 h-8">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="col-start-2">
+                            <button
+                                className="w-20 h-20 bg-blue-500/30 rounded-full border-2 border-blue-400 active:bg-blue-500/60 flex items-center justify-center backdrop-blur-sm"
+                                onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerJump(); }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="col-start-3">
+                            <button
+                                className="w-16 h-16 bg-green-500/30 rounded-full border-2 border-green-400 active:bg-green-500/60 flex items-center justify-center backdrop-blur-sm"
+                                onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerDodge(); }}
+                            >
+                                <span className="text-white font-bold text-xs">DODGE</span>
+                            </button>
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
