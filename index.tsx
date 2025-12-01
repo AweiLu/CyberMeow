@@ -2820,50 +2820,55 @@ const CyberpunkGame = () => {
             )}
 
             {gameState === 'GAME_OVER' && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-50 backdrop-blur-sm">
-                    <div className="bg-neutral-900 border-2 border-cyan-500 p-8 rounded-lg shadow-[0_0_50px_rgba(0,243,255,0.3)] max-w-3xl w-full relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                <div className="absolute inset-0 z-50 flex flex-col bg-black/95 backdrop-blur-sm">
+                    {/* Scrollable Container */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full relative">
+                        <div className="min-h-full flex flex-col items-center justify-center p-4 md:p-8">
+                            <div className="bg-neutral-900 border-2 border-cyan-500 p-6 md:p-8 rounded-lg shadow-[0_0_50px_rgba(0,243,255,0.3)] max-w-3xl w-full relative overflow-hidden my-auto">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
 
-                        <h1 className="text-6xl font-black text-white mb-2 font-zh text-center tracking-widest border-b border-gray-700 pb-4">
-                            戰鬥結束
-                        </h1>
+                                <h1 className="text-4xl md:text-6xl font-black text-white mb-2 font-zh text-center tracking-widest border-b border-gray-700 pb-4">
+                                    戰鬥結束
+                                </h1>
 
-                        <div className="flex flex-col gap-6 mt-6">
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
-                                    <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">擊殺BOSS (WAVES)</span>
-                                    <span className="text-5xl font-bold text-cyan-400 font-arcade mt-2">{bossDefeatedCount}</span>
+                                <div className="flex flex-col gap-6 mt-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
+                                            <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">擊殺BOSS (WAVES)</span>
+                                            <span className="text-5xl font-bold text-cyan-400 font-arcade mt-2">{bossDefeatedCount}</span>
+                                        </div>
+                                        <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
+                                            <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">生存時間 (TIME)</span>
+                                            <span className="text-5xl font-bold text-purple-400 font-arcade mt-2">{formatTime(survivalTime)}</span>
+                                        </div>
+                                        <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
+                                            <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">總積分 (SCORE)</span>
+                                            <span className="text-5xl font-bold text-yellow-400 font-arcade mt-2">{score}</span>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className="relative mt-4 bg-gray-800/50 p-6 rounded border-l-4 border-pink-500 cursor-pointer hover:bg-gray-800/70 transition-colors"
+                                        onClick={() => setCurrentQuoteIndex((prev) => (prev + 1) % CAT_QUOTES.length)}
+                                    >
+                                        <div className="absolute -top-3 -left-3 bg-pink-600 text-white text-xs px-2 py-1 font-bold rounded shadow-lg">
+                                            本喵的喃喃自語
+                                        </div>
+                                        <p className="text-xl text-white italic font-zh leading-relaxed tracking-wide mt-2 text-center">
+                                            "{CAT_QUOTES[currentQuoteIndex]}"
+                                        </p>
+                                        <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                                            [點擊切換]
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
-                                    <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">生存時間 (TIME)</span>
-                                    <span className="text-5xl font-bold text-purple-400 font-arcade mt-2">{formatTime(survivalTime)}</span>
-                                </div>
-                                <div className="bg-black/50 p-4 border border-gray-700 rounded flex flex-col items-center">
-                                    <span className="text-gray-400 text-sm font-zh tracking-widest uppercase">總積分 (SCORE)</span>
-                                    <span className="text-5xl font-bold text-yellow-400 font-arcade mt-2">{score}</span>
+
+                                <div className="mt-8 flex justify-center pb-4 md:pb-0">
+                                    <button onClick={startGame} className="px-12 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold text-xl tracking-widest rounded shadow-[0_0_30px_rgba(255,0,0,0.4)] hover:scale-105 transition-all pointer-events-auto font-zh group">
+                                        <span className="group-hover:animate-pulse">再來一次(✪ω✪)</span>
+                                    </button>
                                 </div>
                             </div>
-
-                            <div
-                                className="relative mt-4 bg-gray-800/50 p-6 rounded border-l-4 border-pink-500 cursor-pointer hover:bg-gray-800/70 transition-colors"
-                                onClick={() => setCurrentQuoteIndex((prev) => (prev + 1) % CAT_QUOTES.length)}
-                            >
-                                <div className="absolute -top-3 -left-3 bg-pink-600 text-white text-xs px-2 py-1 font-bold rounded shadow-lg">
-                                    本喵的喃喃自語
-                                </div>
-                                <p className="text-xl text-white italic font-zh leading-relaxed tracking-wide mt-2 text-center">
-                                    "{CAT_QUOTES[currentQuoteIndex]}"
-                                </p>
-                                <div className="absolute bottom-2 right-2 text-xs text-gray-500">
-                                    [點擊切換]
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-8 flex justify-center">
-                            <button onClick={startGame} className="px-12 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold text-xl tracking-widest rounded shadow-[0_0_30px_rgba(255,0,0,0.4)] hover:scale-105 transition-all pointer-events-auto font-zh group">
-                                <span className="group-hover:animate-pulse">再來一次(✪ω✪)</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -2902,7 +2907,7 @@ const CyberpunkGame = () => {
                                 className="w-16 h-16 bg-yellow-500/30 rounded-full border-2 border-yellow-400 active:bg-yellow-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerUltimate(); }}
                             >
-                                <span className="text-white font-bold text-xs">ULT</span>
+                                <span className="text-white font-bold text-base font-zh drop-shadow-md">大招</span>
                             </button>
                         </div>
 
@@ -2912,9 +2917,7 @@ const CyberpunkGame = () => {
                                 className="w-16 h-16 bg-red-500/30 rounded-full border-2 border-red-400 active:bg-red-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerAttack(); }}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-8 h-8">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <span className="text-white font-bold text-base font-zh drop-shadow-md">爪擊</span>
                             </button>
                         </div>
                         <div className="col-start-2">
@@ -2922,9 +2925,7 @@ const CyberpunkGame = () => {
                                 className="w-20 h-20 bg-blue-500/30 rounded-full border-2 border-blue-400 active:bg-blue-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerJump(); }}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-10 h-10">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-                                </svg>
+                                <span className="text-white font-bold text-xl font-zh drop-shadow-md">跳</span>
                             </button>
                         </div>
                         <div className="col-start-3">
@@ -2932,7 +2933,7 @@ const CyberpunkGame = () => {
                                 className="w-16 h-16 bg-green-500/30 rounded-full border-2 border-green-400 active:bg-green-500/60 flex items-center justify-center backdrop-blur-sm"
                                 onTouchStart={(e) => { e.preventDefault(); gameRef.current.triggerDodge(); }}
                             >
-                                <span className="text-white font-bold text-xs">DODGE</span>
+                                <span className="text-white font-bold text-base font-zh drop-shadow-md">閃避</span>
                             </button>
                         </div>
                     </div>
